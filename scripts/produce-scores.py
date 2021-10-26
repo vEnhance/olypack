@@ -81,7 +81,7 @@ for k in qualities.keys():
 
 with open("output/authors.tsv") as f:
 	for line in f:
-		p, author, slug = line.strip().split('\t')
+		p, author, slug, filename = line.strip().split('\t')
 		authors[p] = author
 		slugs[p] = slug
 

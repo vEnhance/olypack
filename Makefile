@@ -40,4 +40,4 @@ output/draft-solns-day1.pdf: $(wildcard source/*.tex) data.yaml password output/
 	python scripts/produce-draft.py
 
 output/receipt.mkd: data.yaml scripts/produce-receipts.py final-report/final-NO-SEND-report.tex output/summary.csv
-	python scripts/produce-receipts.py
+	python scripts/produce-receipts.py > $@
