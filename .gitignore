@@ -1,0 +1,9 @@
+source/*
+final-report/*
+inputs/*
+output/*
+notes/*
+tex/*
+!tex/internal-NO-SEND-probs.tex
+!tex/internal-NO-SEND-solns.tex
+!tex/instructions.tex
