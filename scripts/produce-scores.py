@@ -170,50 +170,54 @@ def print_everything(name, fn=None, flip_slug=False):
 		print_difficulty_table(filtered_difficulties, sort_key, False)
 
 
-print(r"\section{All ratings}")
-print_quality_table(qualities)
-print_difficulty_table(difficulties)
+if len(difficulties) > 0 or len(qualities) > 0:
+	print(r"\section{All ratings}")
+	print_quality_table(qualities)
+	print_difficulty_table(difficulties)
 
-print("\n" + r"\newpage" + "\n")
-print_everything(
-	"Beauty contest, by overall popularity", lambda p: (-avg(qualities[p]), p), False
-)
-print_everything(
-	"Beauty contest, by subject and popularity", lambda p: (p[0], -avg(qualities[p]), p), False
-)
-print_everything(
-	"Beauty contest, by overall difficulty", lambda p: (-avg(difficulties[p]), p), True
-)
-print_everything(
-	"Beauty contest, by subject and difficulty", lambda p: (p[0], -avg(difficulties[p]), p), True
-)
+	print("\n" + r"\newpage" + "\n")
+	print_everything(
+		"Beauty contest, by overall popularity", lambda p: (-avg(qualities[p]), p), False
+	)
+	print_everything(
+		"Beauty contest, by subject and popularity", lambda p: (p[0], -avg(qualities[p]), p), False
+	)
+	print_everything(
+		"Beauty contest, by overall difficulty", lambda p: (-avg(difficulties[p]), p), True
+	)
+	print_everything(
+		"Beauty contest, by subject and difficulty", lambda p: (p[0], -avg(difficulties[p]), p),
+		True
+	)
 
-print("\n")
-print(r"\section{Scatter plot}")
-print(r"\begin{center}")
-print(r"\begin{tikzpicture}")
-print(
-	r"""\begin{axis}[width=0.9\textwidth, height=22cm, grid=both,
-	xlabel={Average difficulty}, ylabel={Average suitability},
-	every node near coord/.append style={font=\scriptsize},
-	scatter/classes={A={red},C={blue},G={green},N={black}}]"""
-)
-print(
-	r"""\addplot [scatter,
-	only marks, point meta=explicit symbolic,
-	nodes near coords*={\prob},
-	visualization depends on={value \thisrow{prob} \as \prob}]"""
-)
-print(r"table [meta=subj] {")
-print("X\tY\tprob\tsubj")
-for p in qualities.keys():
-	x = avg(difficulties[p])
-	y = avg(qualities[p])
-	print("%0.2f\t%0.2f\t%s\t%s" % (x, y, p[2:], p[0]))
-print(r"};")
-print(r"\end{axis}")
-print(r"\end{tikzpicture}")
-print(r"\end{center}")
+	print("\n")
+	print(r"\section{Scatter plot}")
+	print(r"\begin{center}")
+	print(r"\begin{tikzpicture}")
+	print(
+		r"""\begin{axis}[width=0.9\textwidth, height=22cm, grid=both,
+		xlabel={Average difficulty}, ylabel={Average suitability},
+		every node near coord/.append style={font=\scriptsize},
+		scatter/classes={A={red},C={blue},G={green},N={black}}]"""
+	)
+	print(
+		r"""\addplot [scatter,
+		only marks, point meta=explicit symbolic,
+		nodes near coords*={\prob},
+		visualization depends on={value \thisrow{prob} \as \prob}]"""
+	)
+	print(r"table [meta=subj] {")
+	print("X\tY\tprob\tsubj")
+	for p in qualities.keys():
+		x = avg(difficulties[p])
+		y = avg(qualities[p])
+		print("%0.2f\t%0.2f\t%s\t%s" % (x, y, p[2:], p[0]))
+	print(r"};")
+	print(r"\end{axis}")
+	print(r"\end{tikzpicture}")
+	print(r"\end{center}")
+else:
+	print("No ratings to display here yet")
 
 with open("output/summary.csv", 'w') as f:
 	for p in sorted(qualities.keys()):

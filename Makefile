@@ -3,7 +3,7 @@ all: packet
 packet: output/confidential-probs.pdf output/confidential-solns.pdf
 report: output/confidential-report.pdf
 
-output/authors.tsv tex/data-index.tex tex/data-probs.tex tex/data-solns.tex: scripts/assemble.py data.yaml $(wildcard source/*.tex)
+output/authors.tsv tex/data-index.tex tex/data-probs.tex tex/data-solns.tex: scripts/produce-packet.py data.yaml $(wildcard source/*.tex)
 	python3 $<
 
 tex/internal-NO-SEND-probs.pdf: tex/internal-NO-SEND-probs.tex \
@@ -31,5 +31,5 @@ output/confidential-report.pdf: final-report/final-NO-SEND-report.pdf password p
 final-report/final-NO-SEND-report.pdf: final-report/final-NO-SEND-report.tex final-report/table.txt
 	latexmk -cd $<
 
-final-report/table.txt: ratings.tsv scripts/make-table-twn.py 
-	cat $< | python scripts/make-table-twn.py > $@
+final-report/table.txt: ratings.tsv scripts/produce-scores.py
+	cat $< | python scripts/produce-scores.py > $@
