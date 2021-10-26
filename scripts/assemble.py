@@ -4,7 +4,7 @@ __version__ = "2021-10"
 
 import yaml
 
-with open('input/data.yaml') as f:
+with open('data.yaml') as f:
 	problems = yaml.load(f, Loader=yaml.FullLoader)['packet']
 
 with open('tex/data-probs.tex', 'w') as pf, \

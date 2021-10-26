@@ -1,6 +1,8 @@
+data.yaml
+password
+ratings.tsv
 source/*
 final-report/*
-input/*
 output/*
 notes/*
 tex/*
