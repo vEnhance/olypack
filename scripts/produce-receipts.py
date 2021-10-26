@@ -1,6 +1,8 @@
 import csv
 import re
 
+import yaml
+
 feedback_regex = re.compile(r'\\ii\[([A-Z]-[0-9][0-9])')
 feedback = {}
 
@@ -8,6 +10,21 @@ salutation = r'''Thank you for submitting your problem!
 This is the return email for a problem which made it to the review stage,
 meaning it received ratings from my small panel of olympiad experts.
 '''
+
+DELETABLE_ENVIRONMENTS = [
+	r'\begin{itemize}',
+	r'\end{itemize}',
+	r'\begin{enumerate}',
+	r'\end{enumerate}',
+	r'\begin{quote}',
+	r'\end{quote}',
+]
+
+with open('data.yaml') as f:
+	data = yaml.load(f, Loader=yaml.SafeLoader)
+	chosen = []
+	for day in data['chosen'].values():
+		chosen += day
 
 with open('final-report/final-NO-SEND-report.tex') as f:
 	reading_house_comments = False
@@ -31,8 +48,10 @@ with open('final-report/final-NO-SEND-report.tex') as f:
 			else:
 				current_comments = ''
 				slug = ''
-		elif line.strip() == r'\end{quote}' or line.strip() == r'\begin{quote}':
+		elif line.strip() in DELETABLE_ENVIRONMENTS and slug:
 			current_comments += '\n'
+		elif line.strip().startswith(r'\ii') and slug:
+			current_comments += line.lstrip().replace(r'\ii', '- ')
 		elif slug:
 			current_comments += line
 
@@ -42,16 +61,27 @@ DIFFICULTY_RATINGS = ['IMO 1', 'IMO 1.5', 'IMO 2', 'IMO 2.5', 'IMO 3']
 with open('output/summary.csv') as f:
 	reader = csv.reader(f, delimiter=',', quotechar='"')
 	for row in reader:
-		print(f'# Problem {row[0]} ({row[1]})\n')
+		code = row[0]
+		print(f'# Problem {code} ({row[1]})\n')
 		print(f'The author of the problem ({row[1]}) is {row[2]}.\n')
 
 		print(r'## Status' + '\n')
-		# if selected
-		# else
+		if code in chosen:
+			n = 1 + chosen.index(code)
+			print(f"Congratulations! This problem was selected as problem {n}.")
+			print("The attachment should contain the current version of the problem.")
+			print("If you notice anything you think should change, please let me know.")
+			print("And of course, keep this confidential of course until after the exam.")
+		else:
+			print("This problem is hereby returned to you now,")
+			print("meaning that you can now propose it any other competition,")
+			print("including next year if you so choose.")
+			print("If possible, please avoid discussing this problem decision with others")
+			print("until after the exam, to avoid potentially leaking indirect information")
+			print("about other problems that may have been chosen.")
 
 		print(r'## Comments' + '\n')
-		print(feedback[row[0]].strip())
-		# TODO
+		print(feedback[code].strip())
 		print('')
 
 		print(r'## Ratings' + '\n')
