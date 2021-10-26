@@ -3,6 +3,7 @@ all: packet
 packet: output/confidential-probs.pdf output/confidential-solns.pdf
 report: output/confidential-report.pdf
 draft: output/draft-solns-day1.pdf
+receipt: output/receipt.mkd
 
 output/authors.tsv tex/data-index.tex tex/data-probs.tex tex/data-solns.tex: scripts/produce-packet.py data.yaml $(wildcard source/*.tex)
 	python3 $<
@@ -37,3 +38,6 @@ final-report/table.txt: ratings.tsv scripts/produce-scores.py
 
 output/draft-solns-day1.pdf: $(wildcard source/*.tex) data.yaml password output/authors.tsv scripts/produce-draft.py
 	python scripts/produce-draft.py
+
+output/receipt.mkd: data.yaml scripts/produce-receipts.py final-report/final-NO-SEND-report.tex output/summary.csv
+	python scripts/produce-receipts.py
