@@ -1,0 +1,79 @@
+import os
+import subprocess
+import tempfile
+import yaml
+
+__version__ = "2020-05"
+
+tmp_dir_path = tempfile.mkdtemp()
+OUTPUT_PATH = 'output/'
+
+with open('output/user') as f:
+	PASSWORD = f.readline().strip()
+
+with open('data.yaml') as f:
+	yaml_data = yaml.load(f, Loader=yaml.FullLoader)
+	chosen_problems = yaml_data['chosen']
+	DRAFT_PATH = yaml_data['draft']
+	assert os.path.exists(DRAFT_PATH), DRAFT_PATH + " does not exist"
+
+N = 0
+for n, day in chosen_problems.items():
+	# Make problems
+	problems_filename = "problems-day%d.pdf" % n
+	problems_tmp_path = os.path.join(tmp_dir_path, problems_filename)
+	problems_enc_path = os.path.join(OUTPUT_PATH, problems_filename)
+	subprocess.call(["qpdf",
+		"--empty", "--pages",
+		DRAFT_PATH, str(n),
+		"--", problems_tmp_path])
+	subprocess.call(["qpdf",
+		"--encrypt", PASSWORD, PASSWORD, '128',
+		'--print=none', '--modify=none',
+		'--', problems_tmp_path, problems_enc_path])
+
+	# Compile solutions
+	raw_sol_tex_path = os.path.join(tmp_dir_path, "s%d.tex" % n)
+	raw_sol_pdf_path = os.path.join(tmp_dir_path, "s%d.pdf" % n)
+	with open(raw_sol_tex_path, "w") as f:
+		print(r"\documentclass[11pt]{scrartcl}", file=f)
+		print(r"\usepackage[sexy]{evan}", file=f)
+		print(r"\title{Preliminary solutions to day %d}" %n, file=f)
+		print(r"\author{Confidential}", file=f)
+		print(r"\begin{document}", file=f)
+		print(r"\setcounter{section}{%d}" %N, file=f)
+		print("\n", file=f)
+
+		for problem_path in day:
+			with open(problem_path) as g:
+				text = ''.join(g.readlines())
+				stuff = text.split('\n---\n')
+				try:
+					metadata_raw, prob, sol = stuff[0:3]
+				except ValueError:
+					print(stuff)
+					raise ValueError("Couldn't process " + prob_source)
+				prob = prob.strip()
+				sol = sol.strip()
+				metadata_dict = yaml.load(metadata_raw, Loader=yaml.FullLoader)
+				desc = metadata_dict.get('desc')
+			N += 1
+			print(r"\section{%s}" % desc, file=f)
+			print(prob, file=f)
+			print("\n", file=f)
+			print(r"\hrulebar", file=f)
+			print("\n", file=f)
+			print(sol, file=f)
+			print(r"\newpage", file=f)
+			print("\n", file=f)
+		print(r"\end{document}", file=f)
+	subprocess.call(["latexmk", "-cd", raw_sol_tex_path])
+
+	# Make solutions
+	solutions_filename = "solutions-day%d.pdf" % n
+	solutions_tmp_path = raw_sol_pdf_path
+	solutions_enc_path = os.path.join(OUTPUT_PATH, solutions_filename)
+	subprocess.call(["qpdf",
+		"--encrypt", PASSWORD, PASSWORD, '128',
+		'--print=none', '--modify=none',
+		'--', solutions_tmp_path, solutions_enc_path])
