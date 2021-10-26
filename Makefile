@@ -3,7 +3,7 @@ all: packet
 packet: output/confidential-probs.pdf output/confidential-solns.pdf
 report: output/confidential-report.pdf
 
-tex/data-index.tex tex/data-probs.tex tex/data-solns.tex: scripts/assemble.py data.yaml $(wildcard source/*.tex)
+output/authors.tsv tex/data-index.tex tex/data-probs.tex tex/data-solns.tex: scripts/assemble.py data.yaml $(wildcard source/*.tex)
 	python3 $<
 
 tex/internal-NO-SEND-probs.pdf: tex/internal-NO-SEND-probs.tex \

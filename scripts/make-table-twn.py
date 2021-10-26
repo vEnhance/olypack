@@ -79,13 +79,11 @@ for k in qualities.keys():
 	if k not in difficulties:
 		difficulties[k] = []
 
-with open("output/authors.txt") as f:
+with open("output/authors.tsv") as f:
 	for line in f:
-		if not '\t' in line:
-			continue
-		p, data = line.strip().split('\t')
-		authors[p] = data[:data.index('(')].strip()
-		slugs[p] = data[data.index('(') + 1:data.rindex(')')].strip()
+		p, author, slug = line.strip().split('\t')
+		authors[p] = author
+		slugs[p] = slug
 
 
 def get_color_string(x, scale_min, scale_max, color_min, color_max):

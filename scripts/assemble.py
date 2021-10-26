@@ -10,7 +10,7 @@ with open('data.yaml') as f:
 with open('tex/data-probs.tex', 'w') as pf, \
   open('tex/data-solns.tex', 'w') as sf, \
   open('tex/data-index.tex', 'w') as xf, \
-  open('output/authors.txt', 'w') as af:
+  open('output/authors.tsv', 'w') as af:
 	n = 0
 	print(r'\begin{description}[itemsep=2pt]', file=xf)
 
@@ -34,7 +34,7 @@ with open('tex/data-probs.tex', 'w') as pf, \
 				letter = metadata_dict.get('letter', subject[0])
 				sol = sol.strip()
 				assert len(author) < 100, "Author name %s too long" % author
-			pnum = '%s-%02d' % (letter, n)
+			pnum = f'{letter}-{n:02d}'
 			print(r'\renewcommand{\theprob}{%s}' % (pnum), file=pf)
 			print(r'\begin{prob}', file=pf)
 			print(prob, file=pf)
@@ -47,7 +47,7 @@ with open('tex/data-probs.tex', 'w') as pf, \
 			print(sol, file=sf)
 			print(r'\newpage', file=sf)
 
-			print("%s\t%s (%s)" % (pnum, author, desc), file=af)
+			print("\t".join([pnum, author, desc, prob_source]), file=af)
 			print(r'\item[%s] %s' % (pnum, desc), file=xf)
 		print(r'\newpage', file=pf)
 	print(r'\end{description}', file=xf)
