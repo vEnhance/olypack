@@ -7,12 +7,15 @@ import yaml
 with open('data.yaml') as f:
 	problems = yaml.load(f, Loader=yaml.FullLoader)['packet']
 
+total_problems = sum(len(subject_problems) for subject_problems in problems)
+
 with open('tex/data-probs.tex', 'w') as pf, \
   open('tex/data-solns.tex', 'w') as sf, \
   open('tex/data-index.tex', 'w') as xf, \
   open('output/authors.tsv', 'w') as af:
 	n = 0
-	if len(problems) > 0:
+
+	if total_problems > 0:
 		print(r'\begin{description}[itemsep=2pt]', file=xf)
 
 	for subject, dir_items in problems.items():
@@ -51,5 +54,5 @@ with open('tex/data-probs.tex', 'w') as pf, \
 			print("\t".join([pnum, author, desc, prob_source]), file=af)
 			print(r'\item[%s] %s' % (pnum, desc), file=xf)
 		print(r'\newpage', file=pf)
-	if len(problems) > 0:
-		print(r'\end{description}[itemsep=2pt]', file=xf)
+	if total_problems > 0:
+		print(r'\end{description}', file=xf)
