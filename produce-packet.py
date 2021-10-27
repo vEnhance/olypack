@@ -7,7 +7,7 @@ import yaml
 with open('data.yaml') as f:
 	problems = yaml.load(f, Loader=yaml.FullLoader)['packet']
 
-total_problems = sum(len(subject_problems) for subject_problems in problems)
+total_problems = sum(len(x) for x in problems.values())
 
 with open('tex/data-probs.tex', 'w') as pf, \
   open('tex/data-solns.tex', 'w') as sf, \
