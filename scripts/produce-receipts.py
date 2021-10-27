@@ -6,10 +6,29 @@ import yaml
 feedback_regex = re.compile(r'\\ii\[([A-Z]-[0-9][0-9])')
 feedback = {}
 
+NOT_LISTED = r'''# Not listed
+
+Thank you for submitting this problem!
+We ended up not shortlisting this problem to keep the
+size of the review packet manageable,
+however you should shortly hear back about other problems of yours
+which did make it into the review stage.
+
+This problem is hereby returned now, and you may send it wherever you like.
+
+
+-------------------------
+
+'''
+print(NOT_LISTED)
+
 salutation = r'''Thank you for submitting your problem!
 This is the return email for a problem which made it to the review stage,
-meaning it received ratings from my small panel of olympiad experts.
-'''
+meaning it received ratings from my small panel of olympiad enthusiasts.
+Below you can find your problem status,
+a few comments summarizing the feedback from the reviewers,
+and numerical ratings among those reviewers who worked the problem.
+Feel free to follow up with any questions.'''
 
 DELETABLE_ENVIRONMENTS = [
 	r'\begin{itemize}',
@@ -63,7 +82,9 @@ with open('output/summary.csv') as f:
 	for row in reader:
 		code = row[0]
 		print(f'# Problem {code} ({row[1]})\n')
-		print(f'The author of the problem ({row[1]}) is {row[2]}.\n')
+		print(salutation)
+		print(r'')
+		print(f'The author of the problem ({row[1]}) is **{row[2]}**.\n')
 
 		print(r'## Status' + '\n')
 		if code in chosen:
