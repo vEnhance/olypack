@@ -1,11 +1,1 @@
-data.yaml
-password
-ratings.tsv
-source/*
-final-report/*
-output/*
-notes/*
-tex/*
-!tex/internal-NO-SEND-probs.tex
-!tex/internal-NO-SEND-solns.tex
-!tex/instructions.tex
+**.pyc
