@@ -3,4 +3,7 @@ packet:
   Combinatorics: []
   Geometry: []
   Number Theory: []
-trim: []
+chosen:
+  1: []
+  2: []
+draft: "FILENAME.pdf"
