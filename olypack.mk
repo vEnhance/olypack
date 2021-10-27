@@ -1,6 +1,6 @@
 all: packet
 
-packet: output/confidential-probs.pdf output/confidential-solns.pdf
+packet: output/confidential-probs.pdf output/confidential-solns.pdf output/authors.tsv
 report: output/confidential-report.pdf
 draft: output/draft-solns-day1.pdf
 receipt: output/receipt.html
