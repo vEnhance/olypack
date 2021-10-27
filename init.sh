@@ -6,4 +6,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$DIR"
 cp -r template/* ..
 
-mkdir -p ../notes
+mkdir -p ../notes ../output
