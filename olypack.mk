@@ -5,7 +5,7 @@ report: output/confidential-report.pdf
 draft: output/draft-solns-day1.pdf
 receipt: output/receipt.html
 
-output/authors.tsv tex/data-index.tex tex/data-probs.tex tex/data-solns.tex: scripts/produce-packet.py data.yaml $(wildcard source/*.tex)
+output/authors.tsv tex/data-index.tex tex/data-probs.tex tex/data-solns.tex: olypack/produce-packet.py data.yaml $(wildcard source/*.tex)
 	python3 $<
 
 tex/internal-NO-SEND-probs.pdf: tex/internal-NO-SEND-probs.tex \
@@ -36,14 +36,14 @@ final-report/final-NO-SEND-report.pdf: final-report/final-NO-SEND-report.tex fin
 	latexmk -cd $<
 	touch $@
 
-final-report/table.txt output/summary.csv: ratings.tsv scripts/produce-scores.py
-	cat $< | python scripts/produce-scores.py > $@
+final-report/table.txt output/summary.csv: ratings.tsv olypack/produce-scores.py
+	cat $< | python olypack/produce-scores.py > $@
 
-output/draft-solns-day1.pdf: $(wildcard source/*.tex) data.yaml password output/authors.tsv scripts/produce-draft.py
-	python scripts/produce-draft.py
+output/draft-solns-day1.pdf: $(wildcard source/*.tex) data.yaml password output/authors.tsv olypack/produce-draft.py
+	python olypack/produce-draft.py
 
-output/receipt.mkd: data.yaml scripts/produce-receipts.py final-report/final-NO-SEND-report.tex output/summary.csv
-	python scripts/produce-receipts.py > $@
+output/receipt.mkd: data.yaml olypack/produce-receipts.py final-report/final-NO-SEND-report.tex output/summary.csv
+	python olypack/produce-receipts.py > $@
 
 output/receipt.html: output/receipt.mkd
 	python -m markdown $< > $@
