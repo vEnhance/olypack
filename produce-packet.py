@@ -12,7 +12,8 @@ with open('tex/data-probs.tex', 'w') as pf, \
   open('tex/data-index.tex', 'w') as xf, \
   open('output/authors.tsv', 'w') as af:
 	n = 0
-	print(r'\begin{description}[itemsep=2pt]', file=xf)
+	if len(problems) > 0:
+		print(r'\begin{description}[itemsep=2pt]', file=xf)
 
 	for subject, dir_items in problems.items():
 		print(r'\section{' + subject + '}', file=pf)
@@ -50,4 +51,5 @@ with open('tex/data-probs.tex', 'w') as pf, \
 			print("\t".join([pnum, author, desc, prob_source]), file=af)
 			print(r'\item[%s] %s' % (pnum, desc), file=xf)
 		print(r'\newpage', file=pf)
-	print(r'\end{description}', file=xf)
+	if len(problems) > 0:
+		print(r'\end{description}[itemsep=2pt]', file=xf)
