@@ -21,15 +21,15 @@ tex/internal-NO-SEND-solns.pdf: tex/internal-NO-SEND-solns.tex \
 	touch $@
 
 output/confidential-probs.pdf: tex/internal-NO-SEND-probs.pdf password password
-	qpdf --encrypt $$(cat password) $$(cat password) 128 \
+	qpdf --encrypt $$(cat password) $$(cat password) 256 \
 	--print=none --modify=none -- $< $@
 
 output/confidential-solns.pdf: tex/internal-NO-SEND-solns.pdf password password
-	qpdf --encrypt $$(cat password) $$(cat password) 128 \
+	qpdf --encrypt $$(cat password) $$(cat password) 256 \
 	--print=none --modify=none -- $< $@
 
 output/confidential-report.pdf: final-report/final-NO-SEND-report.pdf password password
-	qpdf --encrypt $$(cat password) $$(cat password) 128 \
+	qpdf --encrypt $$(cat password) $$(cat password) 256 \
 	--print=none --modify=none -- $< $@
 
 final-report/final-NO-SEND-report.pdf: final-report/final-NO-SEND-report.tex final-report/table.txt
