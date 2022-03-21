@@ -102,7 +102,7 @@ with open('output/summary.csv') as f:
 			print("about other problems that may have been chosen.")
 
 		print(r'## Comments' + '\n')
-		print(feedback[code].strip())
+		print(feedback.get(code, "No comments.").strip())
 		print('')
 
 		print(r'## Ratings' + '\n')
