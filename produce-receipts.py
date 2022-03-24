@@ -82,9 +82,9 @@ with open('output/summary.csv') as f:
 	for row in reader:
 		code = row[0]
 		print(f'# Problem {code} ({row[1]})\n')
-		print(salutation)
-		print(r'')
 		print(f'The author of the problem ({row[1]}) is **{row[2]}**.\n')
+		print(r'')
+		print(salutation)
 
 		print(r'## Status' + '\n')
 		if code in chosen:
