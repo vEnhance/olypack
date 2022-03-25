@@ -27,7 +27,7 @@ This is the return email for a problem which made it to the review stage,
 meaning it received ratings from my small panel of olympiad enthusiasts.
 Below you can find your problem status,
 a few comments summarizing the feedback from the reviewers,
-and numerical ratings among those reviewers who worked the problem.
+and numerical ratings among those reviewers who worked on the problem.
 Feel free to follow up with any questions.'''
 
 DELETABLE_ENVIRONMENTS = [
@@ -95,7 +95,7 @@ with open('output/summary.csv') as f:
 			print("And of course, keep this confidential of course until after the exam.")
 		else:
 			print("This problem is hereby returned to you now,")
-			print("meaning that you can now propose it any other competition,")
+			print("meaning that you can now propose it to any other competition,")
 			print("including next year if you so choose.")
 			print("If possible, please avoid discussing this problem decision with others")
 			print("until after the exam, to avoid potentially leaking indirect information")
