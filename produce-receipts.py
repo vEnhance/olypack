@@ -3,7 +3,7 @@ import re
 
 import yaml
 
-feedback_regex = re.compile(r'\\ii\[([A-Z]-[0-9][0-9])')
+feedback_regex = re.compile(r'\\item\[([A-Z]-[0-9][0-9])')
 feedback = {}
 
 NOT_LISTED = r'''# Not listed
@@ -55,10 +55,10 @@ with open('final-report/final-NO-SEND-report.tex') as f:
 			reading_house_comments = True
 		elif reading_house_comments is False:
 			continue
-		elif (m := feedback_regex.match(line)) is not None:
+		elif (m := feedback_regex.match(line.strip())) is not None:
 			if slug:
 				feedback[slug] = current_comments
-				current_comments = ''
+			current_comments = ' '.join(line.split(' ')[1:])
 			slug = m.group(1)
 		elif line.strip() == r'\end{description}' or line.startswith(r'\chapter'):
 			feedback[slug] = current_comments
