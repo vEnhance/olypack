@@ -72,16 +72,21 @@ with open('final-report/final-NO-SEND-report.tex') as f:
 		elif line.strip().startswith(r'\ii') and slug:
 			current_comments += line.lstrip().replace(r'\ii', '- ')
 		elif slug:
-			current_comments += line
+			current_comments += line.strip() + '\n'
 
 QUALITY_RATINGS = ['Excellent', 'Nice', 'Acceptable', 'Mediocre', 'Unsuitable']
 DIFFICULTY_RATINGS = ['IMO 1', 'IMO 1.5', 'IMO 2', 'IMO 2.5', 'IMO 3']
+
+with open('tex/names.txt') as f:
+	report_audience = [line.strip() for line in f.readlines()]
 
 with open('output/summary.csv') as f:
 	reader = csv.reader(f, delimiter=',', quotechar='"')
 	for row in reader:
 		code = row[0]
-		print(f'# Problem {code} ({row[1]})\n')
+		author = row[2]
+		s = '*' if author not in report_audience else ''
+		print(f'# {s} Problem {code} ({row[1]})\n')
 		print(f'The author of the problem ({row[1]}) is **{row[2]}**.\n')
 		print(r'')
 		print(salutation)
@@ -90,7 +95,8 @@ with open('output/summary.csv') as f:
 		if code in chosen:
 			n = 1 + chosen.index(code)
 			print(f"Congratulations! This problem was selected as problem {n}.")
-			print("The attachment should contain the current version of the problem.")
+			print("Here is the current statement:")
+			print("> INSERT STATEMENT HERE" + "\n")
 			print("If you notice anything you think should change, please let me know.")
 			print("And of course, keep this confidential of course until after the exam.")
 		else:

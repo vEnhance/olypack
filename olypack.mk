@@ -42,7 +42,7 @@ final-report/table.txt output/summary.csv: ratings.tsv olypack/produce-scores.py
 output/draft-solns-day1.pdf: $(wildcard source/*.tex) data.yaml password output/authors.tsv olypack/produce-draft.py
 	python olypack/produce-draft.py
 
-output/receipt.mkd: data.yaml olypack/produce-receipts.py final-report/final-NO-SEND-report.tex output/summary.csv
+output/receipt.mkd: data.yaml olypack/produce-receipts.py final-report/final-NO-SEND-report.tex output/summary.csv tex/names.txt
 	python olypack/produce-receipts.py > $@
 
 output/receipt.html: output/receipt.mkd
