@@ -7,22 +7,22 @@ import yaml
 __version__ = "2020-05"
 
 tmp_dir_path = tempfile.mkdtemp()
-OUTPUT_PATH = 'output/'
+OUTPUT_PATH = "output/"
 
-with open('password') as f:
+with open("password") as f:
     PASSWORD = f.readline().strip()
 
-with open('data.yaml') as f:
+with open("data.yaml") as f:
     yaml_data = yaml.load(f, Loader=yaml.FullLoader)
-    chosen_problems = yaml_data['chosen']
-    DRAFT_PATH = yaml_data['draft']
+    chosen_problems = yaml_data["chosen"]
+    DRAFT_PATH = yaml_data["draft"]
     assert os.path.exists(DRAFT_PATH), DRAFT_PATH + " does not exist"
 
 code_to_path = {}
-with open('output/authors.tsv') as f:
+with open("output/authors.tsv") as f:
     for line in f:
-        code = line.strip().split('\t')[0]
-        path = line.strip().split('\t')[-1]
+        code = line.strip().split("\t")[0]
+        path = line.strip().split("\t")[-1]
         code_to_path[code] = path
 
 N = 0
@@ -31,14 +31,23 @@ for n, day in chosen_problems.items():
     problems_filename = "draft-problems-day%d.pdf" % n
     problems_tmp_path = os.path.join(tmp_dir_path, problems_filename)
     problems_enc_path = os.path.join(OUTPUT_PATH, problems_filename)
-    subprocess.call([
-        "qpdf", "--empty", "--pages", DRAFT_PATH,
-        str(n), "--", problems_tmp_path
-    ])
-    subprocess.call([
-        "qpdf", "--encrypt", PASSWORD, PASSWORD, '128', '--print=none',
-        '--modify=none', '--', problems_tmp_path, problems_enc_path
-    ])
+    subprocess.call(
+        ["qpdf", "--empty", "--pages", DRAFT_PATH, str(n), "--", problems_tmp_path]
+    )
+    subprocess.call(
+        [
+            "qpdf",
+            "--encrypt",
+            PASSWORD,
+            PASSWORD,
+            "128",
+            "--print=none",
+            "--modify=none",
+            "--",
+            problems_tmp_path,
+            problems_enc_path,
+        ]
+    )
 
     # Compile solutions
     raw_sol_tex_path = os.path.join(tmp_dir_path, "s%d.tex" % n)
@@ -55,8 +64,8 @@ for n, day in chosen_problems.items():
         for code in day:
             problem_path = code_to_path[code]
             with open(problem_path) as g:
-                text = ''.join(g.readlines())
-                stuff = text.split('\n---\n')
+                text = "".join(g.readlines())
+                stuff = text.split("\n---\n")
                 try:
                     metadata_raw, prob, sol = stuff[0:3]
                 except ValueError:
@@ -65,7 +74,7 @@ for n, day in chosen_problems.items():
                 prob = prob.strip()
                 sol = sol.strip()
                 metadata_dict = yaml.load(metadata_raw, Loader=yaml.FullLoader)
-                desc = metadata_dict.get('desc')
+                desc = metadata_dict.get("desc")
             N += 1
             print(r"\section{%s}" % desc, file=f)
             print(prob, file=f)
@@ -82,7 +91,17 @@ for n, day in chosen_problems.items():
     solutions_filename = "draft-soln-day%d.pdf" % n
     solutions_tmp_path = raw_sol_pdf_path
     solutions_enc_path = os.path.join(OUTPUT_PATH, solutions_filename)
-    subprocess.call([
-        "qpdf", "--encrypt", PASSWORD, PASSWORD, '128', '--print=none',
-        '--modify=none', '--', solutions_tmp_path, solutions_enc_path
-    ])
+    subprocess.call(
+        [
+            "qpdf",
+            "--encrypt",
+            PASSWORD,
+            PASSWORD,
+            "128",
+            "--print=none",
+            "--modify=none",
+            "--",
+            solutions_tmp_path,
+            solutions_enc_path,
+        ]
+    )

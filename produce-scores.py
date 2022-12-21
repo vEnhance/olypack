@@ -5,7 +5,7 @@ from typing import DefaultDict, List
 
 __version__ = "2021-10"
 
-reader = csv.DictReader(sys.stdin, delimiter='\t')
+reader = csv.DictReader(sys.stdin, delimiter="\t")
 qualities: DefaultDict[str, List[float]] = collections.defaultdict(list)
 difficulties: DefaultDict[str, List[float]] = collections.defaultdict(list)
 slugs = {}
@@ -21,7 +21,7 @@ def avg(x) -> float:
 
 def format_avg(x, s: str):
     if len(x) == 0:
-        return '---'
+        return "---"
     else:
         return s % avg(x)
 
@@ -44,7 +44,7 @@ for row in reader:
         if key is None:
             continue
         if "quality rating" in key:
-            p = key[key.index("[") + 1:key.index("]")]
+            p = key[key.index("[") + 1 : key.index("]")]
             r = row[key]
             r = r.replace(" ", "").upper()
             if r == "UNSUITABLE":
@@ -58,7 +58,7 @@ for row in reader:
             elif r == "EXCELLENT":
                 qualities[p].append(WT_E)
         if "difficulty rating" in key:
-            p = key[key.index("[") + 1:key.index("]")]
+            p = key[key.index("[") + 1 : key.index("]")]
             r = row[key]
             r = r.replace(" ", "").upper()
             if r == "IMO1":
@@ -81,7 +81,7 @@ for k in qualities.keys():
 
 with open("output/authors.tsv") as f:
     for line in f:
-        p, author, slug, filename = line.strip().split('\t')
+        p, author, slug, filename = line.strip().split("\t")
         authors[p] = author
         slugs[p] = slug
 
@@ -95,7 +95,7 @@ def get_color_string(x, scale_min, scale_max, color_min, color_max):
 
 def get_label(key, slugged=False):
     if slugged:
-        return r"{\scriptsize \textbf{%s} %s}" % (key, slugs.get(key, ''))
+        return r"{\scriptsize \textbf{%s} %s}" % (key, slugs.get(key, ""))
     else:
         return r"{\scriptsize \textbf{%s}}" % key
 
@@ -111,7 +111,7 @@ def get_quality_row(key, data, slugged=True):
         data.count(WT_A),
         data.count(WT_N),
         data.count(WT_E),
-        format_avg(data, '$%+4.2f$'),
+        format_avg(data, "$%+4.2f$"),
     )
     return color_tex + row_tex
 
@@ -137,7 +137,7 @@ def get_difficulty_row(key, data, slugged=False):
         data.count(2),
         data.count(2.5),
         data.count(3),
-        format_avg(data, '%.3f'),
+        format_avg(data, "%.3f"),
     )
     return color_tex + row_tex
 
@@ -176,27 +176,43 @@ if len(difficulties) > 0 or len(qualities) > 0:
     print_difficulty_table(difficulties)
 
     print("\n" + r"\newpage" + "\n")
-    print_everything("Beauty contest, by overall popularity", lambda p:
-                     (-avg(qualities[p]), p), False)
-    print_everything("Beauty contest, by subject and popularity", lambda p:
-                     (p[0], -avg(qualities[p]), p), False)
-    print_everything("Beauty contest, by overall difficulty", lambda p:
-                     (-avg(difficulties[p]), p), True)
-    print_everything("Beauty contest, by subject and difficulty", lambda p:
-                     (p[0], -avg(difficulties[p]), p), True)
+    print_everything(
+        "Beauty contest, by overall popularity",
+        lambda p: (-avg(qualities[p]), p),
+        False,
+    )
+    print_everything(
+        "Beauty contest, by subject and popularity",
+        lambda p: (p[0], -avg(qualities[p]), p),
+        False,
+    )
+    print_everything(
+        "Beauty contest, by overall difficulty",
+        lambda p: (-avg(difficulties[p]), p),
+        True,
+    )
+    print_everything(
+        "Beauty contest, by subject and difficulty",
+        lambda p: (p[0], -avg(difficulties[p]), p),
+        True,
+    )
 
     print("\n")
     print(r"\section{Scatter plot}")
     print(r"\begin{center}")
     print(r"\begin{tikzpicture}")
-    print(r"""\begin{axis}[width=0.9\textwidth, height=22cm, grid=both,
+    print(
+        r"""\begin{axis}[width=0.9\textwidth, height=22cm, grid=both,
     xlabel={Average difficulty}, ylabel={Average suitability},
     every node near coord/.append style={font=\scriptsize},
-    scatter/classes={A={red},C={blue},G={green},N={black}}]""")
-    print(r"""\addplot [scatter,
+    scatter/classes={A={red},C={blue},G={green},N={black}}]"""
+    )
+    print(
+        r"""\addplot [scatter,
     only marks, point meta=explicit symbolic,
     nodes near coords*={\prob},
-    visualization depends on={value \thisrow{prob} \as \prob}]""")
+    visualization depends on={value \thisrow{prob} \as \prob}]"""
+    )
     print(r"table [meta=subj] {")
     print("X\tY\tprob\tsubj")
     for p in qualities.keys():
@@ -210,10 +226,10 @@ if len(difficulties) > 0 or len(qualities) > 0:
 else:
     print("No ratings to display here yet")
 
-with open("output/summary.csv", 'w') as f:
+with open("output/summary.csv", "w") as f:
     for p in sorted(qualities.keys()):
-        qs = ','.join(
-            str(qualities[p].count(x)) for x in (WT_U, WT_M, WT_A, WT_N, WT_E))
-        ds = ','.join(
-            str(difficulties[p].count(x)) for x in (1, 1.5, 2, 2.5, 3))
+        qs = ",".join(
+            str(qualities[p].count(x)) for x in (WT_U, WT_M, WT_A, WT_N, WT_E)
+        )
+        ds = ",".join(str(difficulties[p].count(x)) for x in (1, 1.5, 2, 2.5, 3))
         print(f'{p},"{slugs[p]}","{authors[p]}",{qs},{ds}', file=f)
