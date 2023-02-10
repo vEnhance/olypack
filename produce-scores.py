@@ -3,7 +3,7 @@ import csv
 import sys
 from typing import DefaultDict, List
 
-__version__ = "2021-10"
+__version__ = "2023-02"
 
 reader = csv.DictReader(sys.stdin, delimiter="\t")
 qualities: DefaultDict[str, List[float]] = collections.defaultdict(list)
@@ -41,7 +41,7 @@ def criteria(k):
 # Read data
 for row in reader:
     for key in row.keys():
-        if key is None:
+        if key is None or row[key] is None:
             continue
         if "quality rating" in key:
             p = key[key.index("[") + 1 : key.index("]")]
