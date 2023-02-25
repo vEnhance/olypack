@@ -58,6 +58,9 @@ for n, day in chosen_problems.items():
         print(r"\title{Preliminary solutions to day %d}" % n, file=f)
         print(r"\author{Confidential}", file=f)
         print(r"\begin{document}", file=f)
+        print(r"\maketitle", file=f)
+        print(r"\tableofcontents", file=f)
+        print(r"\newpage", file=f)
         print(r"\setcounter{section}{%d}" % N, file=f)
         print("\n", file=f)
 
