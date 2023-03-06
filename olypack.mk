@@ -37,13 +37,13 @@ final-report/final-NO-SEND-report.pdf: final-report/final-NO-SEND-report.tex fin
 	touch $@
 
 final-report/table.txt output/summary.csv: ratings.tsv olypack/produce-scores.py
-	cat $< | python olypack/produce-scores.py > final-report/table.txt
+	cat $< | python3 olypack/produce-scores.py > final-report/table.txt
 
 output/draft-solns-day1.pdf: $(wildcard source/*.tex) data.yaml password output/authors.tsv olypack/produce-draft.py
-	python olypack/produce-draft.py
+	python3 olypack/produce-draft.py
 
 output/receipt.mkd: data.yaml olypack/produce-receipts.py final-report/final-NO-SEND-report.tex output/summary.csv tex/names.txt
-	python olypack/produce-receipts.py > $@
+	python3 olypack/produce-receipts.py > $@
 
 output/receipt.html: output/receipt.mkd
-	python -m markdown $< > $@
+	python3 -m markdown $< > $@
