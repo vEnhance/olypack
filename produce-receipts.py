@@ -102,9 +102,7 @@ with open("output/summary.csv") as f:
             print("Here is the current statement:")
             print("> INSERT STATEMENT HERE" + "\n")
             print("If you notice anything you think should change, please let me know.")
-            print(
-                "And of course, keep this confidential of course until after the exam."
-            )
+            print("And of course, keep this confidential until after the exam.")
         else:
             print("This problem is hereby returned to you now,")
             print("meaning that you can now propose it to any other competition,")
