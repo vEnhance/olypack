@@ -5,6 +5,6 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 cd "$DIR" || exit
 cp -r template/* ..
-cp template/.gitignore ..
+mv ../gitignore ../.gitignore
 
 mkdir -p ../notes ../output ../source
