@@ -10,13 +10,13 @@ output/authors.tsv tex/data-index.tex tex/data-probs.tex tex/data-solns.tex: oly
 
 tex/internal-NO-SEND-probs.pdf: tex/internal-NO-SEND-probs.tex \
 	tex/data-probs.tex tex/data-index.tex \
-	tex/meta.sty tex/instructions.tex tex/names.txt tex/assign.txt
+	tex/meta.sty tex/instructions.tex tex/names.txt
 	latexmk -cd $<
 	touch $@
 
 tex/internal-NO-SEND-solns.pdf: tex/internal-NO-SEND-solns.tex \
 	tex/data-probs.tex tex/data-solns.tex \
-	tex/meta.sty tex/instructions.tex tex/names.txt tex/assign.txt
+	tex/meta.sty tex/instructions.tex tex/names.txt
 	latexmk -cd $<
 	touch $@
 
