@@ -40,17 +40,24 @@ with open("tex/data-probs.tex", "w") as pf, open("tex/data-solns.tex", "w") as s
             pnum = f"{letter}-{n:02d}"
             pnum_no_dash = f"{letter}{n:02d}"
 
-            print(r"\renewcommand{\theprob}{%s}" % pnum, file=pf)
+            print(
+                r"\ifTSTlinks\renewcommand{\theprob}{\hyperref[sol:%s]{%s}}\else\renewcommand\theprob{%s}\fi"
+                % (pnum_no_dash, pnum, pnum),
+                file=pf,
+            )
             print(r"\begin{prob}", file=pf)
-            print(r"\mlink{\S}{sol:%s}" % pnum_no_dash, file=pf)
             print(prob, file=pf)
             print(r"\label{prob:%s}" % pnum_no_dash, file=pf)
             print(r"\end{prob}", file=pf)
             print("\n", file=pf)
 
             print(r"\subsection{Solution %s (%s)}" % (pnum, desc), file=sf)
-            print(r"\mlink{\#}{prob:%s}" % pnum_no_dash, file=sf)
             print(r"\label{sol:%s}" % pnum_no_dash, file=sf)
+            print(
+                r"{\Large\bfseries\sffamily\hyperref[prob:%s]{%s}.}"
+                % (pnum_no_dash, pnum),
+                file=sf,
+            )
             print(prob, file=sf)
             print("\n" * 2 + r"\bigskip\hrulebar\bigskip" + "\n" * 2, file=sf)
             print(sol, file=sf)
