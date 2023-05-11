@@ -8,6 +8,14 @@ with open("data.yaml") as f:
     problems = yaml.load(f, Loader=yaml.FullLoader)["packet"]
 
 total_problems = sum(len(x) for x in problems.values())
+unique_authors = set()
+
+
+def get_individual_authors(author_string: str) -> list[str]:
+    author_string = author_string.replace(", and ", ", ")
+    author_string = author_string.replace(" and ", ", ")
+    return author_string.split(", ")
+
 
 with (
     open("tex/data-probs.tex", "w") as pf,
@@ -68,6 +76,13 @@ with (
 
             print("\t".join([pnum, author, desc, prob_source]), file=af)
             print(r"\item[%s] %s" % (pnum, desc), file=xf)
+
+            for a in get_individual_authors(author):
+                unique_authors.add(a)
         print(r"\newpage", file=pf)
     if total_problems > 0:
         print(r"\end{description}", file=xf)
+
+
+with open("output/uniqauthor.txt", "w") as f:
+    print(",\n".join(sorted(unique_authors)), file=f)
