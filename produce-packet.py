@@ -9,9 +9,12 @@ with open("data.yaml") as f:
 
 total_problems = sum(len(x) for x in problems.values())
 
-with open("tex/data-probs.tex", "w") as pf, open("tex/data-solns.tex", "w") as sf, open(
-    "tex/data-index.tex", "w"
-) as xf, open("output/authors.tsv", "w") as af:
+with (
+    open("tex/data-probs.tex", "w") as pf,
+    open("tex/data-solns.tex", "w") as sf,
+    open("tex/data-index.tex", "w") as xf,
+    open("output/authors.tsv", "w") as af,
+):
     n = 0
 
     if total_problems > 0:
