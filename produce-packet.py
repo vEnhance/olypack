@@ -22,15 +22,20 @@ with (
     open("tex/data-solns.tex", "w") as sf,
     open("tex/data-index.tex", "w") as xf,
     open("output/authors.tsv", "w") as af,
+    open("output/form-script.js", "w") as fsf,
 ):
     n = 0
 
+    print("function changeProblems() {", file=fsf)
+    print("var form = FormApp.getActiveForm();", file=fsf)
+    print("var items = form.getItems();", file=fsf)
     if total_problems > 0:
         print(r"\begin{description}[itemsep=2pt]", file=xf)
 
     for subject, dir_items in problems.items():
         print(r"\section{" + subject + "}", file=pf)
         print(r"\section{" + subject + "}", file=sf)
+        descriptor_array = []
         for prob_source in dir_items:
             n += 1
             with open(prob_source) as g:
@@ -76,10 +81,24 @@ with (
 
             print("\t".join([pnum, author, desc, prob_source]), file=af)
             print(r"\item[%s] %s" % (pnum, desc), file=xf)
+            descriptor_array.append(f"{pnum} ({desc})")
 
             for a in get_individual_authors(author):
                 unique_authors.add(a)
         print(r"\newpage", file=pf)
+        print("items.forEach(item => {", file=fsf)
+        form_subject = subject
+        if subject == "Combinatorics":
+            form_subject = "Combo"
+        if subject == "Number Theory":
+            form_subject = "NT"
+        for form_typename, form_conversion_name in (("GRID", "Grid"), ("CHECKBOX_GRID", "CheckboxGrid")):
+            print(r"if (item.getType() == FormApp.ItemType.%s && item.as%sItem().getTitle().includes('%s')) {"
+                    % (form_typename, form_conversion_name, form_subject), file=fsf)
+            print(r"item.as%sItem().setRows(%s);" % (form_conversion_name, descriptor_array), file=fsf)
+            print("}", file=fsf)
+        print("});", file=fsf)
+    print("}", file=fsf)
     if total_problems > 0:
         print(r"\end{description}", file=xf)
 
