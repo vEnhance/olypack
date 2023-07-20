@@ -6,6 +6,7 @@ draft: output/draft-solns-day1.pdf
 receipt: output/receipt.html
 
 output/authors.tsv tex/data-index.tex tex/data-probs.tex tex/data-solns.tex: olypack/produce-packet.py data.yaml $(wildcard source/*.tex)
+	mkdir -p output/
 	python3 $<
 
 tex/internal-NO-SEND-probs.pdf: tex/internal-NO-SEND-probs.tex \
