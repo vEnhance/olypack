@@ -51,6 +51,7 @@ with (
                 author = metadata_dict.get("author")
                 desc = metadata_dict.get("desc")
                 letter = metadata_dict.get("letter", subject[0])
+                prev_appear = metadata_dict.get("prev", "")
                 sol = sol.strip()
                 assert len(author) < 100, "Author name %s too long" % author
             pnum = f"{letter}-{n:02d}"
@@ -79,8 +80,17 @@ with (
             print(sol, file=sf)
             print(r"\newpage", file=sf)
 
-            print("\t".join([pnum, author, desc, prob_source]), file=af)
+            print(
+                "\t".join([pnum, author, desc, prob_source, prev_appear]),
+                file=af,
+            )
             print(r"\item[%s] %s" % (pnum, desc), file=xf)
+            if prev_appear:
+                print(
+                    r"{\small\color{green!30!black} (\textsl{prev.\ %s})}"
+                    % prev_appear,
+                    file=xf,
+                )
             descriptor_array.append(f"{pnum} ({desc})")
 
             for a in get_individual_authors(author):
@@ -92,10 +102,20 @@ with (
             form_subject = "Combo"
         if subject == "Number Theory":
             form_subject = "NT"
-        for form_typename, form_conversion_name in (("GRID", "Grid"), ("CHECKBOX_GRID", "CheckboxGrid")):
-            print(r"if (item.getType() == FormApp.ItemType.%s && item.as%sItem().getTitle().includes('%s')) {"
-                    % (form_typename, form_conversion_name, form_subject), file=fsf)
-            print(r"item.as%sItem().setRows(%s);" % (form_conversion_name, descriptor_array), file=fsf)
+        for form_typename, form_conversion_name in (
+            ("GRID", "Grid"),
+            ("CHECKBOX_GRID", "CheckboxGrid"),
+        ):
+            print(
+                r"if (item.getType() == FormApp.ItemType.%s && item.as%sItem().getTitle().includes('%s')) {"
+                % (form_typename, form_conversion_name, form_subject),
+                file=fsf,
+            )
+            print(
+                r"item.as%sItem().setRows(%s);"
+                % (form_conversion_name, descriptor_array),
+                file=fsf,
+            )
             print("}", file=fsf)
         print("});", file=fsf)
     print("}", file=fsf)
