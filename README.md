@@ -61,7 +61,7 @@ Does $\mathbf{P} = \mathbf{NP}$?
 We show that a poodle is not a cat.
 Since cats are in $\mathbf{NP}$, it will follow $\mathbf{P} \neq \mathbf{NP}$.
 
-% In the packet, a claim* environment is provided for lemmas.
+% In the packet, a claim* environment is provided for claims.
 % (There is an analogous lemma* environment and remark* environment.)
 
 \begin{lemma*}
