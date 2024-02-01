@@ -44,7 +44,8 @@ for row in reader:
         if key is None or row[key] is None:
             continue
         if "quality rating" in key:
-            p = key[key.index("[") + 1 : key.index("]")]
+            p = key[key.index("[") + 1 :]
+            p = p[: p.index(" ")]
             r = row[key]
             r = r.replace(" ", "").upper()
             if r == "UNSUITABLE":
@@ -58,7 +59,8 @@ for row in reader:
             elif r == "EXCELLENT":
                 qualities[p].append(WT_E)
         if "difficulty rating" in key:
-            p = key[key.index("[") + 1 : key.index("]")]
+            p = key[key.index("[") + 1 :]
+            p = p[: p.index(" ")]
             r = row[key]
             r = r.replace(" ", "").upper()
             if r == "IMO1":
@@ -81,7 +83,7 @@ for k in qualities.keys():
 
 with open("output/authors.tsv") as f:
     for line in f:
-        p, author, slug, filename = line.strip().split("\t")
+        p, author, slug, filename, *_ = line.strip().split("\t")
         authors[p] = author
         slugs[p] = slug
 
