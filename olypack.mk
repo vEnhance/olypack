@@ -12,13 +12,13 @@ output/authors.tsv tex/data-index.tex tex/data-probs.tex tex/data-solns.tex: oly
 tex/internal-NO-SEND-probs.pdf: tex/internal-NO-SEND-probs.tex \
 	tex/data-probs.tex tex/data-index.tex \
 	tex/meta.sty tex/instructions.tex tex/names.txt
-	latexmk -cd $<
+	latexmk -cd -pdf $<
 	touch $@
 
 tex/internal-NO-SEND-solns.pdf: tex/internal-NO-SEND-solns.tex \
 	tex/data-probs.tex tex/data-solns.tex \
 	tex/meta.sty tex/instructions.tex tex/names.txt
-	latexmk -cd $<
+	latexmk -cd -pdf $<
 	touch $@
 
 output/confidential-probs.pdf: tex/internal-NO-SEND-probs.pdf password password
@@ -34,7 +34,7 @@ output/confidential-report.pdf: final-report/final-NO-SEND-report.pdf password p
 	--print=none --modify=none -- $< $@
 
 final-report/final-NO-SEND-report.pdf: final-report/final-NO-SEND-report.tex final-report/table.txt
-	latexmk -cd $<
+	latexmk -cd -pdf $<
 	touch $@
 
 final-report/table.txt output/summary.csv: ratings.tsv olypack/produce-scores.py
