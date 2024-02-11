@@ -16,6 +16,11 @@ cd olypack
 ./init.sh
 ```
 
+Install jinja2:
+```bash
+pip install jinja2
+```
+
 ## Commands
 
 When initialized, a `Makefile` appears in the directory where the `olypack`

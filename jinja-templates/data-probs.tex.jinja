@@ -1,0 +1,12 @@
+{% for subject, items in problems.items() %}
+\section{{ "{" }}{{ subject }}{{ "}" }}
+{% for item in items %}
+\ifTSTlinks\renewcommand{\theprob}{\hyperref[sol:{{ item.pnum_no_dash }}]{{ "{" }}{{ item.pnum }}{{ "}" }}}\else\renewcommand\theprob{{ "{" }}{{ item.pnum }}{{ "}" }}\fi
+\begin{prob}
+{{ item.prob }}
+\label{prob:{{ item["pnum_no_dash"] }}}
+\end{prob}
+
+{% endfor %}
+\newpage
+{% endfor %}
