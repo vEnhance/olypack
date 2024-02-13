@@ -1,11 +1,9 @@
 import collections
 import csv
-import sys
 from typing import DefaultDict, List
 
 __version__ = "2023-02"
 
-reader = csv.DictReader(sys.stdin, delimiter="\t")
 qualities: DefaultDict[str, List[float]] = collections.defaultdict(list)
 difficulties: DefaultDict[str, List[float]] = collections.defaultdict(list)
 slugs = {}
@@ -39,40 +37,42 @@ def criteria(k):
 
 
 # Read data
-for row in reader:
-    for key in row.keys():
-        if key is None or row[key] is None:
-            continue
-        if "quality rating" in key:
-            p = key[key.index("[") + 1 :]
-            p = p[: p.index(" ")]
-            r = row[key]
-            r = r.replace(" ", "").upper()
-            if r == "UNSUITABLE":
-                qualities[p].append(WT_U)
-            elif r == "MEDIOCRE":
-                qualities[p].append(WT_M)
-            elif r == "ACCEPTABLE":
-                qualities[p].append(WT_A)
-            elif r == "NICE":
-                qualities[p].append(WT_N)
-            elif r == "EXCELLENT":
-                qualities[p].append(WT_E)
-        if "difficulty rating" in key:
-            p = key[key.index("[") + 1 :]
-            p = p[: p.index(" ")]
-            r = row[key]
-            r = r.replace(" ", "").upper()
-            if r == "IMO1":
-                difficulties[p].append(1)
-            elif r == "IMO1,IMO2":
-                difficulties[p].append(1.5)
-            elif r == "IMO2":
-                difficulties[p].append(2)
-            elif r == "IMO2,IMO3":
-                difficulties[p].append(2.5)
-            elif r == "IMO3":
-                difficulties[p].append(3)
+with open("ratings.tsv", "r") as f:
+    reader = csv.DictReader(f, delimiter="\t")
+    for row in reader:
+        for key in row.keys():
+            if key is None or row[key] is None:
+                continue
+            if "quality rating" in key:
+                p = key[key.index("[") + 1 :]
+                p = p[: p.index(" ")]
+                r = row[key]
+                r = r.replace(" ", "").upper()
+                if r == "UNSUITABLE":
+                    qualities[p].append(WT_U)
+                elif r == "MEDIOCRE":
+                    qualities[p].append(WT_M)
+                elif r == "ACCEPTABLE":
+                    qualities[p].append(WT_A)
+                elif r == "NICE":
+                    qualities[p].append(WT_N)
+                elif r == "EXCELLENT":
+                    qualities[p].append(WT_E)
+            if "difficulty rating" in key:
+                p = key[key.index("[") + 1 :]
+                p = p[: p.index(" ")]
+                r = row[key]
+                r = r.replace(" ", "").upper()
+                if r == "IMO1":
+                    difficulties[p].append(1)
+                elif r == "IMO1,IMO2":
+                    difficulties[p].append(1.5)
+                elif r == "IMO2":
+                    difficulties[p].append(2)
+                elif r == "IMO2,IMO3":
+                    difficulties[p].append(2.5)
+                elif r == "IMO3":
+                    difficulties[p].append(3)
 
 for k in difficulties.keys():
     if k not in qualities:
