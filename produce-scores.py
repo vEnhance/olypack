@@ -3,7 +3,7 @@ import csv
 from typing import DefaultDict, List
 from jinja2 import Environment, FileSystemLoader
 
-__version__ = "2023-02"
+__version__ = "2024-02"
 
 qualities: DefaultDict[str, List[float]] = collections.defaultdict(list)
 difficulties: DefaultDict[str, List[float]] = collections.defaultdict(list)
