@@ -1,6 +1,7 @@
 import collections
 import csv
 from typing import DefaultDict, List
+from jinja2 import Environment, FileSystemLoader
 
 __version__ = "2023-02"
 
@@ -17,22 +18,21 @@ def avg(x) -> float:
         return sum(x) / len(x)
 
 
-def format_avg(x, s: str):
+def format_avg(x, score_mapping: list[float], s: str):
     if len(x) == 0:
         return "---"
     else:
-        return s % avg(x)
+        return s % avg([score_mapping[i] for i in x])
 
 
-WT_U = -0.75
-WT_M = -0.5
-WT_A = 0
-WT_N = 1
-WT_E = 1.5
+RATING_SCALE = ["UNSUITABLE", "MEDIOCRE", "ACCEPTABLE", "NICE", "EXCELLENT"]
+WT = [-0.75, -0.5, 0, 1, 1.5]
 
+DIFFICULTY_SCALE = ["IMO1", "IMO1,IMO2", "IMO2", "IMO2,IMO3", "IMO3"]
+WT_D = [1, 1.5, 2, 2.5, 3]
 
 def criteria(k):
-    a = avg(qualities[k])
+    a = avg([WT[i] for i in qualities[k]])
     return a is not None and a >= 0
 
 
@@ -48,31 +48,15 @@ with open("ratings.tsv", "r") as f:
                 p = p[: p.index(" ")]
                 r = row[key]
                 r = r.replace(" ", "").upper()
-                if r == "UNSUITABLE":
-                    qualities[p].append(WT_U)
-                elif r == "MEDIOCRE":
-                    qualities[p].append(WT_M)
-                elif r == "ACCEPTABLE":
-                    qualities[p].append(WT_A)
-                elif r == "NICE":
-                    qualities[p].append(WT_N)
-                elif r == "EXCELLENT":
-                    qualities[p].append(WT_E)
+                if r in RATING_SCALE:
+                    qualities[p].append(RATING_SCALE.index(r))
             if "difficulty rating" in key:
                 p = key[key.index("[") + 1 :]
                 p = p[: p.index(" ")]
                 r = row[key]
                 r = r.replace(" ", "").upper()
-                if r == "IMO1":
-                    difficulties[p].append(1)
-                elif r == "IMO1,IMO2":
-                    difficulties[p].append(1.5)
-                elif r == "IMO2":
-                    difficulties[p].append(2)
-                elif r == "IMO2,IMO3":
-                    difficulties[p].append(2.5)
-                elif r == "IMO3":
-                    difficulties[p].append(3)
+                if r in DIFFICULTY_SCALE:
+                    difficulties[p].append(DIFFICULTY_SCALE.index(r))
 
 with open("output/authors.tsv") as f:
     for line in f:
@@ -98,15 +82,15 @@ def get_label(key, slugged=False):
 ## Quality rating
 def get_quality_row(key, data, slugged=True):
     a = avg(data)
-    color_tex = get_color_string(a, WT_U, WT_E, "Salmon", "green")
+    color_tex = get_color_string(a, WT[0], WT[-1], "Salmon", "green")
     row_tex = r"%s & %d & %d & %d & %d & %d & %s \\" % (
         get_label(key, slugged),
-        data.count(WT_U),
-        data.count(WT_M),
-        data.count(WT_A),
-        data.count(WT_N),
-        data.count(WT_E),
-        format_avg(data, "$%+4.2f$"),
+        data.count(0),
+        data.count(1),
+        data.count(2),
+        data.count(3),
+        data.count(4),
+        format_avg(data, WT, "$%+4.2f$"),
     )
     return color_tex + row_tex
 
@@ -127,12 +111,12 @@ def get_difficulty_row(key, data, slugged=False):
     color_tex = get_color_string(a, 1, 3, "cyan", "orange")
     row_tex = r"%s & %d & %d & %d & %d & %d & %s \\" % (
         get_label(key, slugged),
+        data.count(0),
         data.count(1),
-        data.count(1.5),
         data.count(2),
-        data.count(2.5),
         data.count(3),
-        format_avg(data, "%.3f"),
+        data.count(4),
+        format_avg(data, WT_D, "%.3f"),
     )
     return color_tex + row_tex
 
@@ -173,22 +157,22 @@ if len(difficulties) > 0 or len(qualities) > 0:
     print("\n" + r"\newpage" + "\n")
     print_everything(
         "Beauty contest, by overall popularity",
-        lambda p: (-avg(qualities[p]), p),
+        lambda p: (-avg([WT[i] for i in qualities[p]]), p),
         False,
     )
     print_everything(
         "Beauty contest, by subject and popularity",
-        lambda p: (p[0], -avg(qualities[p]), p),
+        lambda p: (p[0], -avg([WT[i] for i in qualities[p]]), p),
         False,
     )
     print_everything(
         "Beauty contest, by overall difficulty",
-        lambda p: (-avg(difficulties[p]), p),
+        lambda p: (-avg([WT_D[i] for i in difficulties[p]]), p),
         True,
     )
     print_everything(
         "Beauty contest, by subject and difficulty",
-        lambda p: (p[0], -avg(difficulties[p]), p),
+        lambda p: (p[0], -avg([WT_D[i] for i in difficulties[p]]), p),
         True,
     )
 
@@ -211,8 +195,8 @@ if len(difficulties) > 0 or len(qualities) > 0:
     print(r"table [meta=subj] {")
     print("X\tY\tprob\tsubj")
     for p in qualities.keys():
-        x = avg(difficulties[p])
-        y = avg(qualities[p])
+        x = avg([WT_D[i] for i in difficulties[p]])
+        y = avg([WT[i] for i in qualities[p]])
         print("%0.2f\t%0.2f\t%s\t%s" % (x, y, p[2:], p[0]))
     print(r"};")
     print(r"\end{axis}")
@@ -221,10 +205,16 @@ if len(difficulties) > 0 or len(qualities) > 0:
 else:
     print("No ratings to display here yet")
 
+env = Environment(loader=FileSystemLoader('olypack/jinja-templates'))
+
+with open("final-report/table-test.txt", "w") as f:
+    template = env.get_template('table.txt.jinja')
+    f.write(template.render())
+
 with open("output/summary.csv", "w") as f:
     for p in sorted(qualities.keys()):
         qs = ",".join(
-            str(qualities[p].count(x)) for x in (WT_U, WT_M, WT_A, WT_N, WT_E)
+            str(qualities[p].count(x)) for x in range(len(WT))
         )
-        ds = ",".join(str(difficulties[p].count(x)) for x in (1, 1.5, 2, 2.5, 3))
+        ds = ",".join(str(difficulties[p].count(x)) for x in range(len(WT_D)))
         print(f'{p},"{slugs[p]}","{authors[p]}",{qs},{ds}', file=f)
