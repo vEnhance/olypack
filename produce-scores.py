@@ -25,14 +25,14 @@ def format_avg(x, score_mapping: list[float], s: str):
         return s % avg([score_mapping[i] for i in x])
 
 
-RATING_SCALE = ["UNSUITABLE", "MEDIOCRE", "ACCEPTABLE", "NICE", "EXCELLENT"]
-WT = [-0.75, -0.5, 0, 1, 1.5]
+QUALITY_SCALE = ["UNSUITABLE", "MEDIOCRE", "ACCEPTABLE", "NICE", "EXCELLENT"]
+QUALITY_WEIGHTS = [-0.75, -0.5, 0, 1, 1.5]
 
 DIFFICULTY_SCALE = ["IMO1", "IMO1,IMO2", "IMO2", "IMO2,IMO3", "IMO3"]
-WT_D = [1, 1.5, 2, 2.5, 3]
+DIFFICULTY_WEIGHTS = [1, 1.5, 2, 2.5, 3]
 
 def criteria(k):
-    a = avg([WT[i] for i in qualities[k]])
+    a = avg([QUALITY_WEIGHTS[i] for i in qualities[k]])
     return a is not None and a >= 0
 
 
@@ -48,8 +48,8 @@ with open("ratings.tsv", "r") as f:
                 p = p[: p.index(" ")]
                 r = row[key]
                 r = r.replace(" ", "").upper()
-                if r in RATING_SCALE:
-                    qualities[p].append(RATING_SCALE.index(r))
+                if r in QUALITY_SCALE:
+                    qualities[p].append(QUALITY_SCALE.index(r))
             if "difficulty rating" in key:
                 p = key[key.index("[") + 1 :]
                 p = p[: p.index(" ")]
@@ -82,7 +82,7 @@ def get_label(key, slugged=False):
 ## Quality rating
 def get_quality_row(key, data, slugged=True):
     a = avg(data)
-    color_tex = get_color_string(a, WT[0], WT[-1], "Salmon", "green")
+    color_tex = get_color_string(a, QUALITY_WEIGHTS[0], QUALITY_WEIGHTS[-1], "Salmon", "green")
     row_tex = r"%s & %d & %d & %d & %d & %d & %s \\" % (
         get_label(key, slugged),
         data.count(0),
@@ -90,7 +90,7 @@ def get_quality_row(key, data, slugged=True):
         data.count(2),
         data.count(3),
         data.count(4),
-        format_avg(data, WT, "$%+4.2f$"),
+        format_avg(data, QUALITY_WEIGHTS, "$%+4.2f$"),
     )
     return color_tex + row_tex
 
@@ -116,7 +116,7 @@ def get_difficulty_row(key, data, slugged=False):
         data.count(2),
         data.count(3),
         data.count(4),
-        format_avg(data, WT_D, "%.3f"),
+        format_avg(data, DIFFICULTY_WEIGHTS, "%.3f"),
     )
     return color_tex + row_tex
 
@@ -157,22 +157,22 @@ if len(difficulties) > 0 or len(qualities) > 0:
     print("\n" + r"\newpage" + "\n")
     print_everything(
         "Beauty contest, by overall popularity",
-        lambda p: (-avg([WT[i] for i in qualities[p]]), p),
+        lambda p: (-avg([QUALITY_WEIGHTS[i] for i in qualities[p]]), p),
         False,
     )
     print_everything(
         "Beauty contest, by subject and popularity",
-        lambda p: (p[0], -avg([WT[i] for i in qualities[p]]), p),
+        lambda p: (p[0], -avg([QUALITY_WEIGHTS[i] for i in qualities[p]]), p),
         False,
     )
     print_everything(
         "Beauty contest, by overall difficulty",
-        lambda p: (-avg([WT_D[i] for i in difficulties[p]]), p),
+        lambda p: (-avg([DIFFICULTY_WEIGHTS[i] for i in difficulties[p]]), p),
         True,
     )
     print_everything(
         "Beauty contest, by subject and difficulty",
-        lambda p: (p[0], -avg([WT_D[i] for i in difficulties[p]]), p),
+        lambda p: (p[0], -avg([DIFFICULTY_WEIGHTS[i] for i in difficulties[p]]), p),
         True,
     )
 
@@ -195,8 +195,8 @@ if len(difficulties) > 0 or len(qualities) > 0:
     print(r"table [meta=subj] {")
     print("X\tY\tprob\tsubj")
     for p in qualities.keys():
-        x = avg([WT_D[i] for i in difficulties[p]])
-        y = avg([WT[i] for i in qualities[p]])
+        x = avg([DIFFICULTY_WEIGHTS[i] for i in difficulties[p]])
+        y = avg([QUALITY_WEIGHTS[i] for i in qualities[p]])
         print("%0.2f\t%0.2f\t%s\t%s" % (x, y, p[2:], p[0]))
     print(r"};")
     print(r"\end{axis}")
@@ -214,7 +214,7 @@ with open("final-report/table-test.txt", "w") as f:
 with open("output/summary.csv", "w") as f:
     for p in sorted(qualities.keys()):
         qs = ",".join(
-            str(qualities[p].count(x)) for x in range(len(WT))
+            str(qualities[p].count(x)) for x in range(len(QUALITY_WEIGHTS))
         )
-        ds = ",".join(str(difficulties[p].count(x)) for x in range(len(WT_D)))
+        ds = ",".join(str(difficulties[p].count(x)) for x in range(len(DIFFICULTY_WEIGHTS)))
         print(f'{p},"{slugs[p]}","{authors[p]}",{qs},{ds}', file=f)
