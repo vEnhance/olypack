@@ -5,8 +5,10 @@ from jinja2 import Environment, FileSystemLoader
 
 __version__ = "2024-02"
 
-qualities: DefaultDict[str, List[float]] = collections.defaultdict(list)
-difficulties: DefaultDict[str, List[float]] = collections.defaultdict(list)
+quality_indices: DefaultDict[str, List[float]] = collections.defaultdict(list)
+difficulty_indices: DefaultDict[str, List[float]] = collections.defaultdict(list)
+quality_avgs: DefaultDict[str, float] = collections.defaultdict(float)
+difficulty_avgs: DefaultDict[str, float] = collections.defaultdict(float)
 slugs = {}
 authors = {}
 
@@ -32,7 +34,7 @@ DIFFICULTY_SCALE = ["IMO1", "IMO1,IMO2", "IMO2", "IMO2,IMO3", "IMO3"]
 DIFFICULTY_WEIGHTS = [1, 1.5, 2, 2.5, 3]
 
 def criteria(k):
-    a = avg([QUALITY_WEIGHTS[i] for i in qualities[k]])
+    a = quality_avgs[k]
     return a is not None and a >= 0
 
 
@@ -49,20 +51,22 @@ with open("ratings.tsv", "r") as f:
                 r = row[key]
                 r = r.replace(" ", "").upper()
                 if r in QUALITY_SCALE:
-                    qualities[p].append(QUALITY_SCALE.index(r))
+                    quality_indices[p].append(QUALITY_SCALE.index(r))
             if "difficulty rating" in key:
                 p = key[key.index("[") + 1 :]
                 p = p[: p.index(" ")]
                 r = row[key]
                 r = r.replace(" ", "").upper()
                 if r in DIFFICULTY_SCALE:
-                    difficulties[p].append(DIFFICULTY_SCALE.index(r))
+                    difficulty_indices[p].append(DIFFICULTY_SCALE.index(r))
 
 with open("output/authors.tsv") as f:
     for line in f:
         p, author, slug, filename, *_ = line.strip().split("\t")
         authors[p] = author
         slugs[p] = slug
+        quality_avgs[p] = avg([QUALITY_WEIGHTS[i] for i in quality_indices[p]])
+        difficulty_avgs[p] = avg([DIFFICULTY_WEIGHTS[i] for i in difficulty_indices[p]])
 
 
 def get_color_string(x, scale_min, scale_max, color_min, color_max):
@@ -81,7 +85,7 @@ def get_label(key, slugged=False):
 
 ## Quality rating
 def get_quality_row(key, data, slugged=True):
-    a = avg(data)
+    a = quality_avgs[key]
     color_tex = get_color_string(a, QUALITY_WEIGHTS[0], QUALITY_WEIGHTS[-1], "Salmon", "green")
     row_tex = r"%s & %d & %d & %d & %d & %d & %s \\" % (
         get_label(key, slugged),
@@ -107,7 +111,7 @@ def print_quality_table(d, sort_key=None, slugged=True):
 
 ## Difficulty rating
 def get_difficulty_row(key, data, slugged=False):
-    a = avg(data)
+    a = difficulty_avgs[key]
     color_tex = get_color_string(a, 1, 3, "cyan", "orange")
     row_tex = r"%s & %d & %d & %d & %d & %d & %s \\" % (
         get_label(key, slugged),
@@ -131,8 +135,8 @@ def print_difficulty_table(d, sort_key=None, slugged=False):
     print(r"\end{tabular}")
 
 
-filtered_qualities = {k: v for k, v in qualities.items() if criteria(k)}
-filtered_difficulties = {k: v for k, v in difficulties.items() if criteria(k)}
+filtered_qualities = {k: v for k, v in quality_indices.items() if criteria(k)}
+filtered_difficulties = {k: v for k, v in difficulty_indices.items() if criteria(k)}
 
 
 def print_everything(name, fn=None, flip_slug=False):
@@ -149,30 +153,30 @@ def print_everything(name, fn=None, flip_slug=False):
         print_difficulty_table(filtered_difficulties, sort_key, False)
 
 
-if len(difficulties) > 0 or len(qualities) > 0:
+if len(difficulty_indices) > 0 or len(quality_indices) > 0:
     print(r"\section{All ratings}")
-    print_quality_table(qualities)
-    print_difficulty_table(difficulties)
+    print_quality_table(quality_indices)
+    print_difficulty_table(difficulty_indices)
 
     print("\n" + r"\newpage" + "\n")
     print_everything(
         "Beauty contest, by overall popularity",
-        lambda p: (-avg([QUALITY_WEIGHTS[i] for i in qualities[p]]), p),
+        lambda p: (-quality_avgs[p], p),
         False,
     )
     print_everything(
         "Beauty contest, by subject and popularity",
-        lambda p: (p[0], -avg([QUALITY_WEIGHTS[i] for i in qualities[p]]), p),
+        lambda p: (p[0], -quality_avgs[p], p),
         False,
     )
     print_everything(
         "Beauty contest, by overall difficulty",
-        lambda p: (-avg([DIFFICULTY_WEIGHTS[i] for i in difficulties[p]]), p),
+        lambda p: (-difficulty_avgs[p], p),
         True,
     )
     print_everything(
         "Beauty contest, by subject and difficulty",
-        lambda p: (p[0], -avg([DIFFICULTY_WEIGHTS[i] for i in difficulties[p]]), p),
+        lambda p: (p[0], -difficulty_avgs[p], p),
         True,
     )
 
@@ -194,9 +198,9 @@ if len(difficulties) > 0 or len(qualities) > 0:
     )
     print(r"table [meta=subj] {")
     print("X\tY\tprob\tsubj")
-    for p in qualities.keys():
-        x = avg([DIFFICULTY_WEIGHTS[i] for i in difficulties[p]])
-        y = avg([QUALITY_WEIGHTS[i] for i in qualities[p]])
+    for p in quality_indices.keys():
+        x = difficulty_avgs[p]
+        y = quality_avgs[p]
         print("%0.2f\t%0.2f\t%s\t%s" % (x, y, p[2:], p[0]))
     print(r"};")
     print(r"\end{axis}")
@@ -209,12 +213,12 @@ env = Environment(loader=FileSystemLoader('olypack/jinja-templates'))
 
 with open("final-report/table-test.txt", "w") as f:
     template = env.get_template('table.txt.jinja')
-    f.write(template.render())
+    f.write(template.render(difficulties=difficulty_indices, qualities=quality_indices))
 
 with open("output/summary.csv", "w") as f:
-    for p in sorted(qualities.keys()):
+    for p in sorted(quality_indices.keys()):
         qs = ",".join(
-            str(qualities[p].count(x)) for x in range(len(QUALITY_WEIGHTS))
+            str(quality_indices[p].count(x)) for x in range(len(QUALITY_WEIGHTS))
         )
-        ds = ",".join(str(difficulties[p].count(x)) for x in range(len(DIFFICULTY_WEIGHTS)))
+        ds = ",".join(str(difficulty_indices[p].count(x)) for x in range(len(DIFFICULTY_WEIGHTS)))
         print(f'{p},"{slugs[p]}","{authors[p]}",{qs},{ds}', file=f)
