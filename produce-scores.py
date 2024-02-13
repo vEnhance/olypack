@@ -118,9 +118,9 @@ def serialized(key):
     }
 
 
-things = [serialized(key) for key in quality_indices]
+problems = [serialized(key) for key in quality_indices]
 
-filtered_things = [serialized(key) for key in quality_indices if criteria(key)]
+filtered_problems = [serialized(key) for key in quality_indices if criteria(key)]
 
 with open("final-report/table.txt", "w") as f:
     if len(difficulty_indices) > 0 or len(quality_indices) > 0:
@@ -128,8 +128,8 @@ with open("final-report/table.txt", "w") as f:
         template = env.get_template("table.txt.jinja")
         f.write(
             template.render(
-                things=things,
-                filtered_things=filtered_things,
+                problems=problems,
+                filtered_problems=filtered_problems,
             )
         )
     else:

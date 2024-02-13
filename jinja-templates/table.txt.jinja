@@ -7,9 +7,9 @@
 \begin{tabular}{lcccccr}
 \toprule Prob & U & M & A & N & E & Avg \\ \midrule
 {%- if filtered -%}
-    {% set items = filtered_things | sort(attribute=sort_key) %}
+    {% set items = filtered_problems | sort(attribute=sort_key) %}
 {%- else -%}
-    {% set items = things | sort(attribute=sort_key) %}
+    {% set items = problems | sort(attribute=sort_key) %}
 {%- endif %}
 {% for problem in items | sort(attribute=sort_key) %}
 {{- problem.quality_color_string }}
@@ -23,9 +23,9 @@
 \begin{tabular}{l ccccc c}
 \toprule Prob & 1 & 1.5 & 2 & 2.5 & 3 & Avg \\ \midrule
 {%- if filtered -%}
-    {% set items = filtered_things | sort(attribute=sort_key) %}
+    {% set items = filtered_problems | sort(attribute=sort_key) %}
 {%- else -%}
-    {% set items = things | sort(attribute=sort_key) %}
+    {% set items = problems | sort(attribute=sort_key) %}
 {%- endif %}
 {% for problem in items | sort(attribute=sort_key) %}
 {{- problem.difficulty_color_string }}
@@ -75,7 +75,7 @@
     visualization depends on={value \thisrow{prob} \as \prob}]
 table [meta=subj] {
 X	Y	prob	subj
-{% for problem in things -%}
+{% for problem in problems -%}
 {{ problem.table_text }}
 {% endfor -%}
 };
