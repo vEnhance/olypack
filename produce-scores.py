@@ -1,6 +1,7 @@
 import collections
 import csv
 from typing import DefaultDict, List
+
 from jinja2 import Environment, FileSystemLoader
 
 __version__ = "2024-02"
@@ -32,6 +33,7 @@ QUALITY_WEIGHTS = [-0.75, -0.5, 0, 1, 1.5]
 
 DIFFICULTY_SCALE = ["IMO1", "IMO1,IMO2", "IMO2", "IMO2,IMO3", "IMO3"]
 DIFFICULTY_WEIGHTS = [1, 1.5, 2, 2.5, 3]
+
 
 def criteria(k):
     a = quality_avgs[k]
@@ -86,7 +88,9 @@ def get_label(key, slugged=False):
 ## Quality rating
 def get_quality_row(key, data, slugged=True):
     a = quality_avgs[key]
-    color_tex = get_color_string(a, QUALITY_WEIGHTS[0], QUALITY_WEIGHTS[-1], "Salmon", "green")
+    color_tex = get_color_string(
+        a, QUALITY_WEIGHTS[0], QUALITY_WEIGHTS[-1], "Salmon", "green"
+    )
     row_tex = r"%s & %d & %d & %d & %d & %d & %s \\" % (
         get_label(key, slugged),
         data.count(0),
@@ -209,16 +213,67 @@ if len(difficulty_indices) > 0 or len(quality_indices) > 0:
 else:
     print("No ratings to display here yet")
 
-env = Environment(loader=FileSystemLoader('olypack/jinja-templates'))
+env = Environment(loader=FileSystemLoader("olypack/jinja-templates"))
+
+quality_color_strings = {
+    key: get_color_string(
+        quality_avgs[key], QUALITY_WEIGHTS[0], QUALITY_WEIGHTS[-1], "Salmon", "green"
+    ).strip()
+    for key in quality_avgs
+}
+
+difficulty_color_strings = {
+    key: get_color_string(
+        difficulty_avgs[key], DIFFICULTY_WEIGHTS[0], DIFFICULTY_WEIGHTS[-1], "cyan", "orange"
+    ).strip()
+    for key in difficulty_avgs
+}
+
+def serialized(key):
+    return {
+        "key": key,
+        "quality": quality_indices[key],
+        "difficulty": difficulty_indices[key],
+        "quality_avg": quality_avgs[key],
+        "difficulty_avg": difficulty_avgs[key],
+        "quality_color": quality_color_strings[key],
+        "difficulty_color": difficulty_color_strings[key],
+        "quality_color_string": quality_color_strings[key],
+        "difficulty_color_string": difficulty_color_strings[key],
+        "slug": slugs[key],
+        "overall_popularity_key": (-quality_avgs[key], key),
+        "subject_popularity_key": (key[0], -quality_avgs[key], key),
+        "overall_difficulty_key": (-difficulty_avgs[key], key),
+        "subject_difficulty_key": (key[0], -difficulty_avgs[key], key),
+        "table_text": "%0.2f\t%0.2f\t%s\t%s" % (difficulty_avgs[key], quality_avgs[key], key[2:], key[0])
+    }
+
+things = [
+    serialized(key)
+    for key in quality_indices
+]
+
+filtered_things = [
+    serialized(key)
+    for key in quality_indices
+    if criteria(key)
+]
 
 with open("final-report/table-test.txt", "w") as f:
-    template = env.get_template('table.txt.jinja')
-    f.write(template.render(difficulties=difficulty_indices, qualities=quality_indices))
+    template = env.get_template("table.txt.jinja")
+    f.write(
+        template.render(
+            things=things,
+            filtered_things=filtered_things,
+        )
+    )
 
 with open("output/summary.csv", "w") as f:
     for p in sorted(quality_indices.keys()):
         qs = ",".join(
             str(quality_indices[p].count(x)) for x in range(len(QUALITY_WEIGHTS))
         )
-        ds = ",".join(str(difficulty_indices[p].count(x)) for x in range(len(DIFFICULTY_WEIGHTS)))
+        ds = ",".join(
+            str(difficulty_indices[p].count(x)) for x in range(len(DIFFICULTY_WEIGHTS))
+        )
         print(f'{p},"{slugs[p]}","{authors[p]}",{qs},{ds}', file=f)

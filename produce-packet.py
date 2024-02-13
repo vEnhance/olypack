@@ -17,6 +17,7 @@ def get_individual_authors(author_string: str) -> list[str]:
     author_string = author_string.replace(" and ", ", ")
     return author_string.split(", ")
 
+
 n = 0
 problems = {}
 
@@ -45,39 +46,41 @@ for subject, dir_items in problem_files.items():
 
         for a in get_individual_authors(author):
             unique_authors.add(a)
-        problems[subject].append({
-            'prob_source': prob_source,
-            'prob': prob.strip(),
-            'sol': sol.strip(),
-            'desc': desc,
-            'pnum': pnum,
-            'pnum_no_dash': pnum_no_dash,
-            'prev_appear': prev_appear,
-            'author': author,
-        })
+        problems[subject].append(
+            {
+                "prob_source": prob_source,
+                "prob": prob.strip(),
+                "sol": sol.strip(),
+                "desc": desc,
+                "pnum": pnum,
+                "pnum_no_dash": pnum_no_dash,
+                "prev_appear": prev_appear,
+                "author": author,
+            }
+        )
 
 with open("output/uniqauthor.txt", "w") as f:
     f.write(",\n".join(sorted(unique_authors)))
 
-env = Environment(loader=FileSystemLoader('olypack/jinja-templates'))
+env = Environment(loader=FileSystemLoader("olypack/jinja-templates"))
 
 
 with open("tex/data-probs.tex", "w") as f:
-    template = env.get_template('data-probs.tex.jinja')
+    template = env.get_template("data-probs.tex.jinja")
     f.write(template.render(problems=problems))
 
 with open("tex/data-solns.tex", "w") as f:
-    template = env.get_template('data-solns.tex.jinja')
+    template = env.get_template("data-solns.tex.jinja")
     f.write(template.render(problems=problems))
 
 with open("tex/data-index.tex", "w") as f:
-    template = env.get_template('data-index.tex.jinja')
+    template = env.get_template("data-index.tex.jinja")
     f.write(template.render(problems=problems, total_problems=total_problems))
 
 with open("output/authors.tsv", "w") as f:
-    template = env.get_template('authors.tsv.jinja')
+    template = env.get_template("authors.tsv.jinja")
     f.write(template.render(problems=problems))
 
 with open("output/form-script.js", "w") as f:
-    template = env.get_template('form-script.js.jinja')
+    template = env.get_template("form-script.js.jinja")
     f.write(template.render(problems=problems))
