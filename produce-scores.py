@@ -74,13 +74,6 @@ with open("ratings.tsv", "r") as f:
                 elif r == "IMO3":
                     difficulties[p].append(3)
 
-for k in difficulties.keys():
-    if k not in qualities:
-        qualities[k] = []
-for k in qualities.keys():
-    if k not in difficulties:
-        difficulties[k] = []
-
 with open("output/authors.tsv") as f:
     for line in f:
         p, author, slug, filename, *_ = line.strip().split("\t")
