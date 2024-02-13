@@ -106,8 +106,6 @@ def serialized(key):
         "difficulty_avg": difficulty_avgs[key],
         "quality_color": quality_color_strings[key],
         "difficulty_color": difficulty_color_strings[key],
-        "quality_color_string": quality_color_strings[key],
-        "difficulty_color_string": difficulty_color_strings[key],
         "slug": slugs[key],
         "overall_popularity_key": (-quality_avgs[key], key),
         "subject_popularity_key": (key[0], -quality_avgs[key], key),

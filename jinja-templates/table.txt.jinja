@@ -12,7 +12,7 @@
     {% set items = problems | sort(attribute=sort_key) %}
 {%- endif %}
 {% for problem in items | sort(attribute=sort_key) %}
-{{- problem.quality_color_string }}
+{{- problem.quality_color }}
 {\scriptsize \textbf{{ "{" }}{{problem.key}}{{ "}" }}{% if with_slug %} {{ problem.slug }}{% endif %}} & {{ count_values(problem.quality, 0, 4) }}${{ '%+4.2f' | format(problem.quality_avg) }}$ \\
 {% endfor -%}
 \bottomrule
@@ -28,7 +28,7 @@
     {% set items = problems | sort(attribute=sort_key) %}
 {%- endif %}
 {% for problem in items | sort(attribute=sort_key) %}
-{{- problem.difficulty_color_string }}
+{{- problem.difficulty_color }}
 {\scriptsize \textbf{{ "{" }}{{problem.key}}{{ "}" }}{% if with_slug %} {{ problem.slug }}{% endif %}} & {{ count_values(problem.difficulty, 0, 4) }}{{ '%.3f' | format(problem.difficulty_avg) }} \\
 {% endfor -%}
 \bottomrule
