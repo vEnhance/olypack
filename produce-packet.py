@@ -39,7 +39,7 @@ for subject, dir_items in problems.items():
             letter = metadata_dict.get("letter", subject[0])
             prev_appear = metadata_dict.get("prev", "")
             sol = sol.strip()
-            assert len(author) < 100, "Author name %s too long" % author
+            assert len(author) < 100, f"Author name {author} too long"
         pnum = f"{letter}-{n:02d}"
         pnum_no_dash = f"{letter}{n:02d}"
 
