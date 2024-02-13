@@ -6,9 +6,9 @@ import yaml
 from jinja2 import Environment, FileSystemLoader
 
 with open("data.yaml") as f:
-    problems = yaml.load(f, Loader=yaml.FullLoader)["packet"]
+    problem_files = yaml.load(f, Loader=yaml.FullLoader)["packet"]
 
-total_problems = sum(len(x) for x in problems.values())
+total_problems = sum(len(x) for x in problem_files.values())
 unique_authors = set()
 
 
@@ -20,7 +20,7 @@ def get_individual_authors(author_string: str) -> list[str]:
 n = 0
 problems = {}
 
-for subject, dir_items in problems.items():
+for subject, dir_items in problem_files.items():
     problems[subject] = []
     for prob_source in dir_items:
         n += 1
@@ -57,7 +57,7 @@ for subject, dir_items in problems.items():
         })
 
 with open("output/uniqauthor.txt", "w") as f:
-    print(",\n".join(sorted(unique_authors)), file=f)
+    f.write(",\n".join(sorted(unique_authors)))
 
 env = Environment(loader=FileSystemLoader('olypack/jinja-templates'))
 
