@@ -21,23 +21,11 @@ def avg(x) -> float:
         return sum(x) / len(x)
 
 
-def format_avg(x, score_mapping: list[float], s: str):
-    if len(x) == 0:
-        return "---"
-    else:
-        return s % avg([score_mapping[i] for i in x])
-
-
 QUALITY_SCALE = ["UNSUITABLE", "MEDIOCRE", "ACCEPTABLE", "NICE", "EXCELLENT"]
 QUALITY_WEIGHTS = [-0.75, -0.5, 0, 1, 1.5]
 
 DIFFICULTY_SCALE = ["IMO1", "IMO1,IMO2", "IMO2", "IMO2,IMO3", "IMO3"]
 DIFFICULTY_WEIGHTS = [1, 1.5, 2, 2.5, 3]
-
-
-def criteria(k):
-    a = quality_avgs[k]
-    return a is not None and a >= 0
 
 
 # Read data
@@ -118,7 +106,7 @@ def serialized(key):
 
 problems = [serialized(key) for key in quality_indices]
 
-filtered_problems = [serialized(key) for key in quality_indices if criteria(key)]
+filtered_problems = [serialized(key) for key in quality_indices if quality_avgs[key] >= 0]
 
 with open("final-report/table.txt", "w") as f:
     if len(difficulty_indices) > 0 or len(quality_indices) > 0:
