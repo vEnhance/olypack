@@ -78,143 +78,6 @@ def get_color_string(x, scale_min, scale_max, color_min, color_max):
     return r"\rowcolor{%s!%d}" % (color, a) + "\n"
 
 
-def get_label(key, slugged=False):
-    if slugged:
-        return r"{\scriptsize \textbf{%s} %s}" % (key, slugs.get(key, ""))
-    else:
-        return r"{\scriptsize \textbf{%s}}" % key
-
-
-## Quality rating
-def get_quality_row(key, data, slugged=True):
-    a = quality_avgs[key]
-    color_tex = get_color_string(
-        a, QUALITY_WEIGHTS[0], QUALITY_WEIGHTS[-1], "Salmon", "green"
-    )
-    row_tex = r"%s & %d & %d & %d & %d & %d & %s \\" % (
-        get_label(key, slugged),
-        data.count(0),
-        data.count(1),
-        data.count(2),
-        data.count(3),
-        data.count(4),
-        format_avg(data, QUALITY_WEIGHTS, "$%+4.2f$"),
-    )
-    return color_tex + row_tex
-
-
-def print_quality_table(d, sort_key=None, slugged=True):
-    items = sorted(d.items(), key=sort_key)
-    print(r"\begin{tabular}{lcccccr}")
-    print(r"\toprule Prob & U & M & A & N & E & Avg \\ \midrule")
-    for key, data in items:
-        print(get_quality_row(key, data, slugged))
-    print(r"\bottomrule")
-    print(r"\end{tabular}")
-
-
-## Difficulty rating
-def get_difficulty_row(key, data, slugged=False):
-    a = difficulty_avgs[key]
-    color_tex = get_color_string(a, 1, 3, "cyan", "orange")
-    row_tex = r"%s & %d & %d & %d & %d & %d & %s \\" % (
-        get_label(key, slugged),
-        data.count(0),
-        data.count(1),
-        data.count(2),
-        data.count(3),
-        data.count(4),
-        format_avg(data, DIFFICULTY_WEIGHTS, "%.3f"),
-    )
-    return color_tex + row_tex
-
-
-def print_difficulty_table(d, sort_key=None, slugged=False):
-    items = sorted(d.items(), key=sort_key)
-    print(r"\begin{tabular}{l ccccc c}")
-    print(r"\toprule Prob & 1 & 1.5 & 2 & 2.5 & 3 & Avg \\ \midrule")
-    for key, data in items:
-        print(get_difficulty_row(key, data, slugged))
-    print(r"\bottomrule")
-    print(r"\end{tabular}")
-
-
-filtered_qualities = {k: v for k, v in quality_indices.items() if criteria(k)}
-filtered_difficulties = {k: v for k, v in difficulty_indices.items() if criteria(k)}
-
-
-def print_everything(name, fn=None, flip_slug=False):
-    if fn is not None:
-        sort_key = lambda item: fn(item[0])
-    else:
-        sort_key = None
-    print(r"\section{" + name + "}")
-    if flip_slug:
-        print_quality_table(filtered_qualities, sort_key, False)
-        print_difficulty_table(filtered_difficulties, sort_key, True)
-    else:
-        print_quality_table(filtered_qualities, sort_key, True)
-        print_difficulty_table(filtered_difficulties, sort_key, False)
-
-
-if len(difficulty_indices) > 0 or len(quality_indices) > 0:
-    print(r"\section{All ratings}")
-    print_quality_table(quality_indices)
-    print_difficulty_table(difficulty_indices)
-
-    print("\n" + r"\newpage" + "\n")
-    print_everything(
-        "Beauty contest, by overall popularity",
-        lambda p: (-quality_avgs[p], p),
-        False,
-    )
-    print_everything(
-        "Beauty contest, by subject and popularity",
-        lambda p: (p[0], -quality_avgs[p], p),
-        False,
-    )
-    print_everything(
-        "Beauty contest, by overall difficulty",
-        lambda p: (-difficulty_avgs[p], p),
-        True,
-    )
-    print_everything(
-        "Beauty contest, by subject and difficulty",
-        lambda p: (p[0], -difficulty_avgs[p], p),
-        True,
-    )
-
-    print("\n")
-    print(r"\section{Scatter plot}")
-    print(r"\begin{center}")
-    print(r"\begin{tikzpicture}")
-    print(
-        r"""\begin{axis}[width=0.9\textwidth, height=22cm, grid=both,
-    xlabel={Average difficulty}, ylabel={Average suitability},
-    every node near coord/.append style={font=\scriptsize},
-    scatter/classes={A={red},C={blue},G={green},N={black}}]"""
-    )
-    print(
-        r"""\addplot [scatter,
-    only marks, point meta=explicit symbolic,
-    nodes near coords*={\prob},
-    visualization depends on={value \thisrow{prob} \as \prob}]"""
-    )
-    print(r"table [meta=subj] {")
-    print("X\tY\tprob\tsubj")
-    for p in quality_indices.keys():
-        x = difficulty_avgs[p]
-        y = quality_avgs[p]
-        print("%0.2f\t%0.2f\t%s\t%s" % (x, y, p[2:], p[0]))
-    print(r"};")
-    print(r"\end{axis}")
-    print(r"\end{tikzpicture}")
-    print(r"\end{center}")
-else:
-    print("No ratings to display here yet")
-
-env = Environment(loader=FileSystemLoader("olypack/jinja-templates"))
-
 quality_color_strings = {
     key: get_color_string(
         quality_avgs[key], QUALITY_WEIGHTS[0], QUALITY_WEIGHTS[-1], "Salmon", "green"
@@ -224,10 +87,15 @@ quality_color_strings = {
 
 difficulty_color_strings = {
     key: get_color_string(
-        difficulty_avgs[key], DIFFICULTY_WEIGHTS[0], DIFFICULTY_WEIGHTS[-1], "cyan", "orange"
+        difficulty_avgs[key],
+        DIFFICULTY_WEIGHTS[0],
+        DIFFICULTY_WEIGHTS[-1],
+        "cyan",
+        "orange",
     ).strip()
     for key in difficulty_avgs
 }
+
 
 def serialized(key):
     return {
@@ -245,28 +113,27 @@ def serialized(key):
         "subject_popularity_key": (key[0], -quality_avgs[key], key),
         "overall_difficulty_key": (-difficulty_avgs[key], key),
         "subject_difficulty_key": (key[0], -difficulty_avgs[key], key),
-        "table_text": "%0.2f\t%0.2f\t%s\t%s" % (difficulty_avgs[key], quality_avgs[key], key[2:], key[0])
+        "table_text": "%0.2f\t%0.2f\t%s\t%s"
+        % (difficulty_avgs[key], quality_avgs[key], key[2:], key[0]),
     }
 
-things = [
-    serialized(key)
-    for key in quality_indices
-]
 
-filtered_things = [
-    serialized(key)
-    for key in quality_indices
-    if criteria(key)
-]
+things = [serialized(key) for key in quality_indices]
 
-with open("final-report/table-test.txt", "w") as f:
-    template = env.get_template("table.txt.jinja")
-    f.write(
-        template.render(
-            things=things,
-            filtered_things=filtered_things,
+filtered_things = [serialized(key) for key in quality_indices if criteria(key)]
+
+with open("final-report/table.txt", "w") as f:
+    if len(difficulty_indices) > 0 or len(quality_indices) > 0:
+        env = Environment(loader=FileSystemLoader("olypack/jinja-templates"))
+        template = env.get_template("table.txt.jinja")
+        f.write(
+            template.render(
+                things=things,
+                filtered_things=filtered_things,
+            )
         )
-    )
+    else:
+        f.write("No ratings to display here yet\n")
 
 with open("output/summary.csv", "w") as f:
     for p in sorted(quality_indices.keys()):
