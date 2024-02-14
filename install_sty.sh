@@ -10,7 +10,8 @@ fi
 fetch_file() {
   local filename="$1"
   local url="$2"
-  local found_files=$(find "$texmfhome" -name "$filename" -print -quit)
+  local found_files
+  found_files=$(find "$texmfhome" -name "$filename" -print -quit)
 
   if [ -n "$found_files" ]; then
     echo "The file $filename was found at $found_files."
