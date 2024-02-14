@@ -106,7 +106,9 @@ def serialized(key):
 
 problems = [serialized(key) for key in quality_indices]
 
-filtered_problems = [serialized(key) for key in quality_indices if quality_avgs[key] >= 0]
+filtered_problems = [
+    serialized(key) for key in quality_indices if quality_avgs[key] >= 0
+]
 
 with open("final-report/table.txt", "w") as f:
     if len(difficulty_indices) > 0 or len(quality_indices) > 0:
