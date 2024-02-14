@@ -12,7 +12,7 @@ fetch_file() {
   local url="$2"
   local found_files=$(find "$texmfhome" -name "$filename" -print -quit)
 
-  if [ ! -z "$found_files" ]; then
+  if [ -n "$found_files" ]; then
     echo "The file $filename was found at $found_files."
   else
     local default_path="$texmfhome/tex/latex/$filename"
