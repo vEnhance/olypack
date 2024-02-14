@@ -1,0 +1,84 @@
+{% macro count_values(data, start, end) %}
+{%- for i in range(start, end + 1) -%}
+{{- data.count(i) }} & {% endfor -%}
+{% endmacro -%}
+
+{% macro quality_table(sort_key, with_slug, filtered) %}
+\begin{tabular}{lcccccr}
+\toprule Prob & U & M & A & N & E & Avg \\ \midrule
+{%- if filtered -%}
+    {% set items = filtered_problems | sort(attribute=sort_key) %}
+{%- else -%}
+    {% set items = problems | sort(attribute=sort_key) %}
+{%- endif %}
+{% for problem in items | sort(attribute=sort_key) %}
+{{- problem.quality_color }}
+{\scriptsize \textbf{{ "{" }}{{problem.key}}{{ "}" }}{% if with_slug %} {{ problem.slug }}{% endif %}} & {{ count_values(problem.quality, 0, 4) }}${{ '%+4.2f' | format(problem.quality_avg) }}$ \\
+{% endfor -%}
+\bottomrule
+\end{tabular}
+{%- endmacro -%}
+
+{% macro difficulty_table(sort_key, with_slug, filtered) %}
+\begin{tabular}{l ccccc c}
+\toprule Prob & 1 & 1.5 & 2 & 2.5 & 3 & Avg \\ \midrule
+{%- if filtered -%}
+    {% set items = filtered_problems | sort(attribute=sort_key) %}
+{%- else -%}
+    {% set items = problems | sort(attribute=sort_key) %}
+{%- endif %}
+{% for problem in items | sort(attribute=sort_key) %}
+{{- problem.difficulty_color }}
+{\scriptsize \textbf{{ "{" }}{{problem.key}}{{ "}" }}{% if with_slug %} {{ problem.slug }}{% endif %}} & {{ count_values(problem.difficulty, 0, 4) }}{{ '%.3f' | format(problem.difficulty_avg) }} \\
+{% endfor -%}
+\bottomrule
+\end{tabular}
+{%- endmacro -%}
+
+\section{All ratings}
+{{ quality_table("key", True) -}}
+{{ difficulty_table("key", False) }}
+
+\newpage
+
+\section{Beauty contest, by overall popularity}
+{{ quality_table("overall_popularity_key", True, True) -}}
+{{ difficulty_table("overall_popularity_key", False, True) }}
+
+\section{Beauty contest, by subject and popularity}
+{{ quality_table("subject_popularity_key", True, True) -}}
+{{ difficulty_table("subject_popularity_key", False, True) }}
+
+\section{Beauty contest, by overall difficulty}
+{{ quality_table("overall_difficulty_key", False, True) -}}
+{{ difficulty_table("overall_difficulty_key", True, True) }}
+
+\section{Beauty contest, by subject and difficulty}
+{{ quality_table("subject_difficulty_key", False, True) -}}
+{{ difficulty_table("subject_difficulty_key", True, True) }}
+
+\section{Scatter plot}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.9\textwidth,
+    height=22cm,
+    grid=both,
+    xlabel={Average difficulty},
+    ylabel={Average suitability},
+    every node near coord/.append style={font=\scriptsize},
+    scatter/classes={A={red},C={blue},G={green},N={black}}
+    ]
+\addplot [scatter,
+    only marks, point meta=explicit symbolic,
+    nodes near coords*={\prob},
+    visualization depends on={value \thisrow{prob} \as \prob}]
+table [meta=subj] {
+X	Y	prob	subj
+{% for problem in problems -%}
+{{ problem.table_text }}
+{% endfor -%}
+};
+\end{axis}
+\end{tikzpicture}
+\end{center}

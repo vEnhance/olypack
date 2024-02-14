@@ -1,0 +1,16 @@
+{% for subject, items in problems.items() %}
+\section{{ "{" }}{{ subject }}{{ "}" }}
+{% for item in items %}
+\subsection{Solution {{ item.pnum }} ({{ item.desc }})}
+\label{sol:{{ item.pnum_no_dash }}}
+{\Large\bfseries\sffamily\hyperref[prob:{{ item.pnum_no_dash }}]{{ "{" }}{{ item.pnum }}{{ "}" }}.}
+{{ item.prob }}
+
+\bigskip\hrulebar\bigskip
+
+{{ item.sol }}
+
+\newpage
+
+{% endfor %}
+{% endfor %}
