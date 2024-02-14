@@ -16,6 +16,11 @@ cd olypack
 ./init.sh
 ```
 
+Obtain the required sty files:
+```bash
+./install_sty.sh
+```
+
 ## Commands
 
 When initialized, a `Makefile` appears in the directory where the `olypack`
