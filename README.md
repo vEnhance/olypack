@@ -16,12 +16,13 @@ cd olypack
 ./init.sh
 ```
 
-Obtain the required sty files (only needs to be done once per computer, not once per TST cycle):
+Steps which only need to be done once per computer rather than once per TST cycle:
+- Obtain the required sty files:
 ```bash
 ./install_sty.sh
 ```
 
-Install jinja2:
+- Install jinja2:
 ```bash
 pip install jinja2
 ```
