@@ -16,13 +16,13 @@ fetch_file() {
     echo "The file $filename was found at $found_files."
   else
     local default_path="$texmfhome/tex/latex/$filename"
-    
+
     echo "$filename was not found. Downloading to $default_path..."
-    
+
     mkdir -p "$(dirname "$default_path")"
-    
+
     curl -Ls "$url" -o "$default_path"
-    
+
     if [ -f "$default_path" ]; then
       echo "$filename has been successfully downloaded to $default_path."
     else
