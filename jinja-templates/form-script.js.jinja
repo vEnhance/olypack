@@ -1,0 +1,37 @@
+function changeProblems() {
+    var form = FormApp.getActiveForm();
+    var items = form.getItems();
+    var descriptorArray;
+
+    {% for subject, dir_items in problems.items() %}
+    descriptorArray = [
+        {% for item in dir_items -%}
+        "{{ item.pnum }} ({{ item.desc | replace('"', '\\"') }})",
+        {% endfor %}
+    ];
+
+    items.forEach(item => {
+        var formSubject = convertSubjectToShortForm("{{ subject }}");
+
+        {% for form_typename, form_conversion_name in [
+            ("GRID", "Grid"),
+            ("CHECKBOX_GRID", "CheckboxGrid"),
+        ] %}
+        if (item.getType() == FormApp.ItemType.{{ form_typename }} && item.as{{ form_conversion_name }}Item().getTitle().includes(formSubject)) {
+            item.as{{ form_conversion_name }}Item().setRows(descriptorArray);
+        }
+        {%- endfor %}
+    });
+    {%- endfor %}
+}
+
+function convertSubjectToShortForm(subject) {
+    switch (subject) {
+        case "Combinatorics":
+            return "Combo";
+        case "Number Theory":
+            return "NT";
+        default:
+            return subject;
+    }
+}

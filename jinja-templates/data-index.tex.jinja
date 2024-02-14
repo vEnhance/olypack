@@ -1,0 +1,14 @@
+{% if total_problems > 0 -%}
+\begin{description}[itemsep=2pt]
+{% endif -%}
+{% for subject, items in problems.items() -%}
+{%- for item in items -%}
+\item[{{ item.pnum }}] {{ item.desc }}
+{% if item.prev_appear -%}
+{\small\color{green!30!black} (\textsl{prev.\ {{ item.prev_appear }}})}
+{% endif %}
+{%- endfor %}
+{%- endfor -%}
+{% if total_problems > 0 -%}
+\end{description}
+{% endif %}

@@ -1,13 +1,15 @@
 import collections
 import csv
-import sys
 from typing import DefaultDict, List
 
-__version__ = "2023-02"
+from jinja2 import Environment, FileSystemLoader
 
-reader = csv.DictReader(sys.stdin, delimiter="\t")
-qualities: DefaultDict[str, List[float]] = collections.defaultdict(list)
-difficulties: DefaultDict[str, List[float]] = collections.defaultdict(list)
+__version__ = "2024-02"
+
+quality_indices: DefaultDict[str, List[float]] = collections.defaultdict(list)
+difficulty_indices: DefaultDict[str, List[float]] = collections.defaultdict(list)
+quality_avgs: DefaultDict[str, float] = collections.defaultdict(float)
+difficulty_avgs: DefaultDict[str, float] = collections.defaultdict(float)
 slugs = {}
 authors = {}
 
@@ -19,73 +21,42 @@ def avg(x) -> float:
         return sum(x) / len(x)
 
 
-def format_avg(x, s: str):
-    if len(x) == 0:
-        return "---"
-    else:
-        return s % avg(x)
+QUALITY_SCALE = ["UNSUITABLE", "MEDIOCRE", "ACCEPTABLE", "NICE", "EXCELLENT"]
+QUALITY_WEIGHTS = [-0.75, -0.5, 0, 1, 1.5]
 
-
-WT_U = -0.75
-WT_M = -0.5
-WT_A = 0
-WT_N = 1
-WT_E = 1.5
-
-
-def criteria(k):
-    a = avg(qualities[k])
-    return a is not None and a >= 0
+DIFFICULTY_SCALE = ["IMO1", "IMO1,IMO2", "IMO2", "IMO2,IMO3", "IMO3"]
+DIFFICULTY_WEIGHTS = [1, 1.5, 2, 2.5, 3]
 
 
 # Read data
-for row in reader:
-    for key in row.keys():
-        if key is None or row[key] is None:
-            continue
-        if "quality rating" in key:
-            p = key[key.index("[") + 1 :]
-            p = p[: p.index(" ")]
-            r = row[key]
-            r = r.replace(" ", "").upper()
-            if r == "UNSUITABLE":
-                qualities[p].append(WT_U)
-            elif r == "MEDIOCRE":
-                qualities[p].append(WT_M)
-            elif r == "ACCEPTABLE":
-                qualities[p].append(WT_A)
-            elif r == "NICE":
-                qualities[p].append(WT_N)
-            elif r == "EXCELLENT":
-                qualities[p].append(WT_E)
-        if "difficulty rating" in key:
-            p = key[key.index("[") + 1 :]
-            p = p[: p.index(" ")]
-            r = row[key]
-            r = r.replace(" ", "").upper()
-            if r == "IMO1":
-                difficulties[p].append(1)
-            elif r == "IMO1,IMO2":
-                difficulties[p].append(1.5)
-            elif r == "IMO2":
-                difficulties[p].append(2)
-            elif r == "IMO2,IMO3":
-                difficulties[p].append(2.5)
-            elif r == "IMO3":
-                difficulties[p].append(3)
-
-for k in difficulties.keys():
-    if k not in qualities:
-        qualities[k] = []
-for k in qualities.keys():
-    if k not in difficulties:
-        difficulties[k] = []
+with open("ratings.tsv", "r") as f:
+    reader = csv.DictReader(f, delimiter="\t")
+    for row in reader:
+        for key in row.keys():
+            if key is None or row[key] is None:
+                continue
+            if "quality rating" in key:
+                p = key[key.index("[") + 1 :]
+                p = p[: p.index(" ")]
+                r = row[key]
+                r = r.replace(" ", "").upper()
+                if r in QUALITY_SCALE:
+                    quality_indices[p].append(QUALITY_SCALE.index(r))
+            if "difficulty rating" in key:
+                p = key[key.index("[") + 1 :]
+                p = p[: p.index(" ")]
+                r = row[key]
+                r = r.replace(" ", "").upper()
+                if r in DIFFICULTY_SCALE:
+                    difficulty_indices[p].append(DIFFICULTY_SCALE.index(r))
 
 with open("output/authors.tsv") as f:
     for line in f:
         p, author, slug, filename, *_ = line.strip().split("\t")
         authors[p] = author
         slugs[p] = slug
+        quality_avgs[p] = avg([QUALITY_WEIGHTS[i] for i in quality_indices[p]])
+        difficulty_avgs[p] = avg([DIFFICULTY_WEIGHTS[i] for i in difficulty_indices[p]])
 
 
 def get_color_string(x, scale_min, scale_max, color_min, color_max):
@@ -95,143 +66,69 @@ def get_color_string(x, scale_min, scale_max, color_min, color_max):
     return r"\rowcolor{%s!%d}" % (color, a) + "\n"
 
 
-def get_label(key, slugged=False):
-    if slugged:
-        return r"{\scriptsize \textbf{%s} %s}" % (key, slugs.get(key, ""))
+quality_color_strings = {
+    key: get_color_string(
+        quality_avgs[key], QUALITY_WEIGHTS[0], QUALITY_WEIGHTS[-1], "Salmon", "green"
+    ).strip()
+    for key in quality_avgs
+}
+
+difficulty_color_strings = {
+    key: get_color_string(
+        difficulty_avgs[key],
+        DIFFICULTY_WEIGHTS[0],
+        DIFFICULTY_WEIGHTS[-1],
+        "cyan",
+        "orange",
+    ).strip()
+    for key in difficulty_avgs
+}
+
+
+def serialized(key):
+    return {
+        "key": key,
+        "quality": quality_indices[key],
+        "difficulty": difficulty_indices[key],
+        "quality_avg": quality_avgs[key],
+        "difficulty_avg": difficulty_avgs[key],
+        "quality_color": quality_color_strings[key],
+        "difficulty_color": difficulty_color_strings[key],
+        "slug": slugs[key],
+        "overall_popularity_key": (-quality_avgs[key], key),
+        "subject_popularity_key": (key[0], -quality_avgs[key], key),
+        "overall_difficulty_key": (-difficulty_avgs[key], key),
+        "subject_difficulty_key": (key[0], -difficulty_avgs[key], key),
+        "table_text": "%0.2f\t%0.2f\t%s\t%s"
+        % (difficulty_avgs[key], quality_avgs[key], key[2:], key[0]),
+    }
+
+
+problems = [serialized(key) for key in quality_indices]
+
+filtered_problems = [
+    serialized(key) for key in quality_indices if quality_avgs[key] >= 0
+]
+
+with open("final-report/table.txt", "w") as f:
+    if len(difficulty_indices) > 0 or len(quality_indices) > 0:
+        env = Environment(loader=FileSystemLoader("olypack/jinja-templates"))
+        template = env.get_template("table.txt.jinja")
+        f.write(
+            template.render(
+                problems=problems,
+                filtered_problems=filtered_problems,
+            )
+        )
     else:
-        return r"{\scriptsize \textbf{%s}}" % key
-
-
-## Quality rating
-def get_quality_row(key, data, slugged=True):
-    a = avg(data)
-    color_tex = get_color_string(a, WT_U, WT_E, "Salmon", "green")
-    row_tex = r"%s & %d & %d & %d & %d & %d & %s \\" % (
-        get_label(key, slugged),
-        data.count(WT_U),
-        data.count(WT_M),
-        data.count(WT_A),
-        data.count(WT_N),
-        data.count(WT_E),
-        format_avg(data, "$%+4.2f$"),
-    )
-    return color_tex + row_tex
-
-
-def print_quality_table(d, sort_key=None, slugged=True):
-    items = sorted(d.items(), key=sort_key)
-    print(r"\begin{tabular}{lcccccr}")
-    print(r"\toprule Prob & U & M & A & N & E & Avg \\ \midrule")
-    for key, data in items:
-        print(get_quality_row(key, data, slugged))
-    print(r"\bottomrule")
-    print(r"\end{tabular}")
-
-
-## Difficulty rating
-def get_difficulty_row(key, data, slugged=False):
-    a = avg(data)
-    color_tex = get_color_string(a, 1, 3, "cyan", "orange")
-    row_tex = r"%s & %d & %d & %d & %d & %d & %s \\" % (
-        get_label(key, slugged),
-        data.count(1),
-        data.count(1.5),
-        data.count(2),
-        data.count(2.5),
-        data.count(3),
-        format_avg(data, "%.3f"),
-    )
-    return color_tex + row_tex
-
-
-def print_difficulty_table(d, sort_key=None, slugged=False):
-    items = sorted(d.items(), key=sort_key)
-    print(r"\begin{tabular}{l ccccc c}")
-    print(r"\toprule Prob & 1 & 1.5 & 2 & 2.5 & 3 & Avg \\ \midrule")
-    for key, data in items:
-        print(get_difficulty_row(key, data, slugged))
-    print(r"\bottomrule")
-    print(r"\end{tabular}")
-
-
-filtered_qualities = {k: v for k, v in qualities.items() if criteria(k)}
-filtered_difficulties = {k: v for k, v in difficulties.items() if criteria(k)}
-
-
-def print_everything(name, fn=None, flip_slug=False):
-    if fn is not None:
-        sort_key = lambda item: fn(item[0])
-    else:
-        sort_key = None
-    print(r"\section{" + name + "}")
-    if flip_slug:
-        print_quality_table(filtered_qualities, sort_key, False)
-        print_difficulty_table(filtered_difficulties, sort_key, True)
-    else:
-        print_quality_table(filtered_qualities, sort_key, True)
-        print_difficulty_table(filtered_difficulties, sort_key, False)
-
-
-if len(difficulties) > 0 or len(qualities) > 0:
-    print(r"\section{All ratings}")
-    print_quality_table(qualities)
-    print_difficulty_table(difficulties)
-
-    print("\n" + r"\newpage" + "\n")
-    print_everything(
-        "Beauty contest, by overall popularity",
-        lambda p: (-avg(qualities[p]), p),
-        False,
-    )
-    print_everything(
-        "Beauty contest, by subject and popularity",
-        lambda p: (p[0], -avg(qualities[p]), p),
-        False,
-    )
-    print_everything(
-        "Beauty contest, by overall difficulty",
-        lambda p: (-avg(difficulties[p]), p),
-        True,
-    )
-    print_everything(
-        "Beauty contest, by subject and difficulty",
-        lambda p: (p[0], -avg(difficulties[p]), p),
-        True,
-    )
-
-    print("\n")
-    print(r"\section{Scatter plot}")
-    print(r"\begin{center}")
-    print(r"\begin{tikzpicture}")
-    print(
-        r"""\begin{axis}[width=0.9\textwidth, height=22cm, grid=both,
-    xlabel={Average difficulty}, ylabel={Average suitability},
-    every node near coord/.append style={font=\scriptsize},
-    scatter/classes={A={red},C={blue},G={green},N={black}}]"""
-    )
-    print(
-        r"""\addplot [scatter,
-    only marks, point meta=explicit symbolic,
-    nodes near coords*={\prob},
-    visualization depends on={value \thisrow{prob} \as \prob}]"""
-    )
-    print(r"table [meta=subj] {")
-    print("X\tY\tprob\tsubj")
-    for p in qualities.keys():
-        x = avg(difficulties[p])
-        y = avg(qualities[p])
-        print("%0.2f\t%0.2f\t%s\t%s" % (x, y, p[2:], p[0]))
-    print(r"};")
-    print(r"\end{axis}")
-    print(r"\end{tikzpicture}")
-    print(r"\end{center}")
-else:
-    print("No ratings to display here yet")
+        f.write("No ratings to display here yet\n")
 
 with open("output/summary.csv", "w") as f:
-    for p in sorted(qualities.keys()):
+    for p in sorted(quality_indices.keys()):
         qs = ",".join(
-            str(qualities[p].count(x)) for x in (WT_U, WT_M, WT_A, WT_N, WT_E)
+            str(quality_indices[p].count(x)) for x in range(len(QUALITY_WEIGHTS))
         )
-        ds = ",".join(str(difficulties[p].count(x)) for x in (1, 1.5, 2, 2.5, 3))
+        ds = ",".join(
+            str(difficulty_indices[p].count(x)) for x in range(len(DIFFICULTY_WEIGHTS))
+        )
         print(f'{p},"{slugs[p]}","{authors[p]}",{qs},{ds}', file=f)
