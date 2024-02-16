@@ -2,7 +2,7 @@ import collections
 import csv
 from typing import DefaultDict, List
 
-from jinja2 import Environment, FileSystemLoader
+from utils import jinja_env
 
 __version__ = "2024-02"
 
@@ -112,7 +112,7 @@ filtered_problems = [
 
 with open("final-report/table.txt", "w") as f:
     if len(difficulty_indices) > 0 or len(quality_indices) > 0:
-        env = Environment(loader=FileSystemLoader("olypack/jinja-templates"))
+        env = jinja_env()
         template = env.get_template("table.txt.jinja")
         f.write(
             template.render(

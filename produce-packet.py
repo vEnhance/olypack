@@ -3,20 +3,13 @@
 __version__ = "2024-02"
 
 import yaml
-from jinja2 import Environment, FileSystemLoader
+from utils import jinja_env, problem_data_from_filename
 
 with open("data.yaml") as f:
     problem_files = yaml.load(f, Loader=yaml.FullLoader)["packet"]
 
 total_problems = sum(len(x) for x in problem_files.values())
 unique_authors = set()
-
-
-def get_individual_authors(author_string: str) -> list[str]:
-    author_string = author_string.replace(", and ", ", ")
-    author_string = author_string.replace(" and ", ", ")
-    return author_string.split(", ")
-
 
 n = 0
 problems = {}
@@ -25,44 +18,21 @@ for subject, dir_items in problem_files.items():
     problems[subject] = []
     for prob_source in dir_items:
         n += 1
-        with open(prob_source) as g:
-            text = "".join(g.readlines())
-            stuff = text.split("\n---\n")
-            try:
-                metadata_raw, prob, sol = stuff[0:3]
-            except ValueError:
-                print(stuff)
-                raise ValueError("Couldn't process " + prob_source)
-            metadata_dict = yaml.load(metadata_raw, Loader=yaml.FullLoader)
-            prob = prob.strip()
-            author = metadata_dict.get("author")
-            desc = metadata_dict.get("desc")
-            letter = metadata_dict.get("letter", subject[0])
-            prev_appear = metadata_dict.get("prev", "")
-            sol = sol.strip()
-            assert len(author) < 100, f"Author name {author} too long"
+        letter = subject[0]
         pnum = f"{letter}-{n:02d}"
         pnum_no_dash = f"{letter}{n:02d}"
+        problem_data_dict = problem_data_from_filename(prob_source)
 
-        for a in get_individual_authors(author):
-            unique_authors.add(a)
-        problems[subject].append(
-            {
-                "prob_source": prob_source,
-                "prob": prob.strip(),
-                "sol": sol.strip(),
-                "desc": desc,
-                "pnum": pnum,
-                "pnum_no_dash": pnum_no_dash,
-                "prev_appear": prev_appear,
-                "author": author,
-            }
-        )
+        unique_authors.update(problem_data_dict["split_authors"])
+
+        problem_data_dict["pnum"] = pnum
+        problem_data_dict["pnum_no_dash"] = pnum_no_dash
+        problems[subject].append(problem_data_dict)
 
 with open("output/uniqauthor.txt", "w") as f:
     f.write(",\n".join(sorted(unique_authors)))
 
-env = Environment(loader=FileSystemLoader("olypack/jinja-templates"))
+env = jinja_env()
 
 
 with open("tex/data-probs.tex", "w") as f:
