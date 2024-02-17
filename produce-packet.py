@@ -29,7 +29,7 @@ for subject, dir_items in problem_files.items():
         problem_data_dict["pnum_no_dash"] = pnum_no_dash
         problems[subject].append(problem_data_dict)
 
-with open("output/uniqauthor.txt", "w") as f:
+with open("tex/uniqauthor.txt", "w") as f:
     f.write(",\n".join(sorted(unique_authors)))
 
 env = jinja_env()
