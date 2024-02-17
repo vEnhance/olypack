@@ -22,12 +22,12 @@ def problem_data_from_filename(filename: str) -> dict:
             print(stuff)
             raise ValueError("Couldn't process " + filename)
         metadata_dict = yaml.load(metadata_raw, Loader=yaml.FullLoader)
-        comments = "" if len(stuff) < 4 else stuff[3]
         prob = prob.strip()
+        sol = sol.strip()
+        comments = "" if len(stuff) < 4 else stuff[3].strip()
         author = metadata_dict.get("author")
         desc = metadata_dict.get("desc")
         prev_appear = metadata_dict.get("prev", "")
-        sol = sol.strip()
         assert len(author) < 100, f"Author name {author} too long"
 
     return {
@@ -38,7 +38,7 @@ def problem_data_from_filename(filename: str) -> dict:
         "prev_appear": prev_appear,
         "author": author,
         "split_authors": get_individual_authors(author),
-        "comments": comments,
+        "comments": comments.strip(),
     }
 
 
@@ -55,9 +55,11 @@ def all_problems():
             letter = subject[0]
             pnum = f"{letter}-{n:02d}"
             pnum_no_dash = f"{letter}{n:02d}"
-            problem_data_dict = problem_data_from_filename(prob_source)
-
-            problem_data_dict["pnum"] = pnum
-            problem_data_dict["pnum_no_dash"] = pnum_no_dash
-            problems[subject].append(problem_data_dict)
+            problems[subject].append(
+                {
+                    **problem_data_from_filename(prob_source),
+                    "pnum": pnum,
+                    "pnum_no_dash": pnum_no_dash,
+                }
+            )
     return problems
