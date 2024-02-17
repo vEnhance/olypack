@@ -13,7 +13,7 @@
 {%- endif %}
 {% for problem in items | sort(attribute=sort_key) %}
 {{- problem.quality_color }}
-{\scriptsize \textbf{{ "{" }}{{problem.key}}{{ "}" }}{% if with_slug %} {{ problem.slug }}{% endif %}} & {{ count_values(problem.quality, 0, 4) }}${{ '%+4.2f' | format(problem.quality_avg) }}$ \\
+{\scriptsize \textbf{{ "{" }}{{problem.pnum}}{{ "}" }}{% if with_slug %} {{ problem.desc }}{% endif %}} & {{ count_values(problem.quality, 0, 4) }}${{ '%+4.2f' | format(problem.quality_avg) }}$ \\
 {% endfor -%}
 \bottomrule
 \end{tabular}
@@ -29,15 +29,15 @@
 {%- endif %}
 {% for problem in items | sort(attribute=sort_key) %}
 {{- problem.difficulty_color }}
-{\scriptsize \textbf{{ "{" }}{{problem.key}}{{ "}" }}{% if with_slug %} {{ problem.slug }}{% endif %}} & {{ count_values(problem.difficulty, 0, 4) }}{{ '%.3f' | format(problem.difficulty_avg) }} \\
+{\scriptsize \textbf{{ "{" }}{{problem.pnum}}{{ "}" }}{% if with_slug %} {{ problem.desc }}{% endif %}} & {{ count_values(problem.difficulty, 0, 4) }}{{ '%.3f' | format(problem.difficulty_avg) }} \\
 {% endfor -%}
 \bottomrule
 \end{tabular}
 {%- endmacro -%}
 
 \section{All ratings}
-{{ quality_table("key", True) -}}
-{{ difficulty_table("key", False) }}
+{{ quality_table("pnum", True) -}}
+{{ difficulty_table("pnum", False) }}
 
 \newpage
 
@@ -76,7 +76,7 @@
 table [meta=subj] {
 X	Y	prob	subj
 {% for problem in problems -%}
-{{ '%.2f' | format(problem.difficulty_avg) }}	{{ '%.2f' | format(problem.quality_avg) }}	{{ problem.key[2:] }}	{{ problem.key[0] }}
+{{ '%.2f' | format(problem.difficulty_avg) }}	{{ '%.2f' | format(problem.quality_avg) }}	{{ problem.pnum[2:] }}	{{ problem.pnum[0] }}
 {% endfor -%}
 };
 \end{axis}
