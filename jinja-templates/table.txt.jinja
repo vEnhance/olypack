@@ -76,7 +76,7 @@
 table [meta=subj] {
 X	Y	prob	subj
 {% for problem in problems -%}
-{{ problem.table_text }}
+{{ '%.2f' | format(problem.difficulty_avg) }}	{{ '%.2f' | format(problem.quality_avg) }}	{{ problem.key[2:] }}	{{ problem.key[0] }}
 {% endfor -%}
 };
 \end{axis}

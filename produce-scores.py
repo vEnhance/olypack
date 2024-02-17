@@ -99,8 +99,6 @@ def serialized(key):
         "subject_popularity_key": (key[0], -quality_avgs[key], key),
         "overall_difficulty_key": (-difficulty_avgs[key], key),
         "subject_difficulty_key": (key[0], -difficulty_avgs[key], key),
-        "table_text": "%0.2f\t%0.2f\t%s\t%s"
-        % (difficulty_avgs[key], quality_avgs[key], key[2:], key[0]),
     }
 
 
