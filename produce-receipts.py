@@ -78,7 +78,7 @@ with open("final-report/final-NO-SEND-report.tex") as f:
 QUALITY_RATINGS = ["Excellent", "Nice", "Acceptable", "Mediocre", "Unsuitable"]
 DIFFICULTY_RATINGS = ["IMO 1", "IMO 1.5", "IMO 2", "IMO 2.5", "IMO 3"]
 
-with open("packet/names.txt") as f:
+with open("packet/reviewers.txt") as f:
     report_audience = [line.strip() for line in f.readlines()]
 
 with open("output/summary.csv") as f:
