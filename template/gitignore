@@ -1,5 +1,6 @@
 output/
-tex/data-*.tex
+packet/data-*.tex
+packet/uniqauthor.txt
 
 pythontex_data.pkl
 **.aux

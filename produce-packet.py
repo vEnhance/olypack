@@ -29,21 +29,21 @@ for subject, dir_items in problem_files.items():
         problem_data_dict["pnum_no_dash"] = pnum_no_dash
         problems[subject].append(problem_data_dict)
 
-with open("tex/uniqauthor.txt", "w") as f:
+with open("packet/uniqauthor.txt", "w") as f:
     f.write(",\n".join(sorted(unique_authors)))
 
 env = jinja_env()
 
 
-with open("tex/data-probs.tex", "w") as f:
+with open("packet/data-probs.tex", "w") as f:
     template = env.get_template("data-probs.tex.jinja")
     f.write(template.render(problems=problems))
 
-with open("tex/data-solns.tex", "w") as f:
+with open("packet/data-solns.tex", "w") as f:
     template = env.get_template("data-solns.tex.jinja")
     f.write(template.render(problems=problems))
 
-with open("tex/data-index.tex", "w") as f:
+with open("packet/data-index.tex", "w") as f:
     template = env.get_template("data-index.tex.jinja")
     f.write(template.render(problems=problems, total_problems=total_problems))
 
