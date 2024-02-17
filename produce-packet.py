@@ -3,31 +3,20 @@
 __version__ = "2024-02"
 
 import yaml
-from utils import jinja_env, problem_data_from_filename
+
+from utils import all_problems, jinja_env
 
 with open("data.yaml") as f:
     problem_files = yaml.load(f, Loader=yaml.FullLoader)["packet"]
 
-total_problems = sum(len(x) for x in problem_files.values())
+total_problems = 0
+
+problems = all_problems()
 unique_authors = set()
-
-n = 0
-problems = {}
-
-for subject, dir_items in problem_files.items():
-    problems[subject] = []
-    for prob_source in dir_items:
-        n += 1
-        letter = subject[0]
-        pnum = f"{letter}-{n:02d}"
-        pnum_no_dash = f"{letter}{n:02d}"
-        problem_data_dict = problem_data_from_filename(prob_source)
-
-        unique_authors.update(problem_data_dict["split_authors"])
-
-        problem_data_dict["pnum"] = pnum
-        problem_data_dict["pnum_no_dash"] = pnum_no_dash
-        problems[subject].append(problem_data_dict)
+for subject, problem_list in problems.items():
+    total_problems += len(problem_list)
+    for problem in problem_list:
+        unique_authors.update(problem["split_authors"])
 
 with open("packet/uniqauthor.txt", "w") as f:
     f.write(",\n".join(sorted(unique_authors)))

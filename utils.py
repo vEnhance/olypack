@@ -17,11 +17,12 @@ def problem_data_from_filename(filename: str) -> dict:
         text = g.read()
         stuff = text.split("\n---\n")
         try:
-            metadata_raw, prob, sol = stuff[0:3]
+            metadata_raw, prob, sol = stuff[:3]
         except ValueError:
             print(stuff)
             raise ValueError("Couldn't process " + filename)
         metadata_dict = yaml.load(metadata_raw, Loader=yaml.FullLoader)
+        comments = "" if len(stuff) < 4 else stuff[3]
         prob = prob.strip()
         author = metadata_dict.get("author")
         desc = metadata_dict.get("desc")
@@ -37,4 +38,26 @@ def problem_data_from_filename(filename: str) -> dict:
         "prev_appear": prev_appear,
         "author": author,
         "split_authors": get_individual_authors(author),
+        "comments": comments,
     }
+
+
+def all_problems():
+    with open("data.yaml") as f:
+        problem_files = yaml.load(f, Loader=yaml.FullLoader)["packet"]
+
+    n = 0
+    problems = {}
+    for subject, dir_items in problem_files.items():
+        problems[subject] = []
+        for prob_source in dir_items:
+            n += 1
+            letter = subject[0]
+            pnum = f"{letter}-{n:02d}"
+            pnum_no_dash = f"{letter}{n:02d}"
+            problem_data_dict = problem_data_from_filename(prob_source)
+
+            problem_data_dict["pnum"] = pnum
+            problem_data_dict["pnum_no_dash"] = pnum_no_dash
+            problems[subject].append(problem_data_dict)
+    return problems

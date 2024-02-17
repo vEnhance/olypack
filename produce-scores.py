@@ -2,7 +2,7 @@ import collections
 import csv
 from typing import DefaultDict, List
 
-from utils import jinja_env
+from utils import all_problems, jinja_env
 
 __version__ = "2024-02"
 
@@ -132,3 +132,12 @@ with open("output/summary.csv", "w") as f:
             str(difficulty_indices[p].count(x)) for x in range(len(DIFFICULTY_WEIGHTS))
         )
         print(f'{p},"{slugs[p]}","{authors[p]}",{qs},{ds}', file=f)
+
+with open("final-report/comments.tex", "w") as f:
+    env = jinja_env()
+    template = env.get_template("comments.tex.jinja")
+    f.write(
+        template.render(
+            problems=all_problems(),
+        )
+    )

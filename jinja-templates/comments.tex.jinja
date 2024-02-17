@@ -1,0 +1,10 @@
+{% for subject, items in problems.items() %}
+\section{{ "{" }}{{ subject }}{{ "}" }}
+
+\begin{description}
+{%- for item in items %}
+\item[{{ item.pnum }} {{ item.desc }}]
+{{- item.comments -}}
+{% endfor %}
+\end{description}
+{% endfor %}
