@@ -40,7 +40,7 @@ final-report/table.tex: ratings.tsv olypack/produce-scores.py
 	python3 olypack/produce-scores.py
 
 output/receipt.mkd: data.yaml olypack/produce-receipts.py final-report/final-NO-SEND-report.tex packet/reviewers.txt
-	python3 olypack/produce-receipts.py > $@
+	python3 olypack/produce-receipts.py
 
 output/receipt.html: output/receipt.mkd
 	python3 -m markdown $< > $@
