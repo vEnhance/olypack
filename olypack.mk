@@ -1,11 +1,11 @@
 all: packet
 
-packet: output/confidential-probs.pdf output/confidential-solns.pdf output/authors.tsv
+packet: output/confidential-probs.pdf output/confidential-solns.pdf
 report: output/confidential-report.pdf
 draft: output/draft-solns-day1.pdf
 receipt: output/receipt.html
 
-output/authors.tsv packet/data-index.tex packet/data-probs.tex packet/data-solns.tex: olypack/produce-packet.py data.yaml $(wildcard source/*.tex)
+packet/data-index.tex packet/data-probs.tex packet/data-solns.tex: olypack/produce-packet.py data.yaml $(wildcard source/*.tex)
 	mkdir -p output/
 	python3 $<
 
@@ -37,13 +37,13 @@ final-report/final-NO-SEND-report.pdf: final-report/final-NO-SEND-report.tex fin
 	latexmk -cd -pdf $<
 	touch $@
 
-final-report/table.txt output/summary.csv: ratings.tsv olypack/produce-scores.py
+final-report/table.txt: ratings.tsv olypack/produce-scores.py
 	python3 olypack/produce-scores.py
 
-output/draft-solns-day1.pdf: $(wildcard source/*.tex) data.yaml password output/authors.tsv olypack/produce-draft.py
+output/draft-solns-day1.pdf: $(wildcard source/*.tex) data.yaml password olypack/produce-draft.py
 	python3 olypack/produce-draft.py
 
-output/receipt.mkd: data.yaml olypack/produce-receipts.py final-report/final-NO-SEND-report.tex output/summary.csv packet/reviewers.txt
+output/receipt.mkd: data.yaml olypack/produce-receipts.py final-report/final-NO-SEND-report.tex packet/reviewers.txt
 	python3 olypack/produce-receipts.py > $@
 
 output/receipt.html: output/receipt.mkd

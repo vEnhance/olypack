@@ -36,10 +36,6 @@ with open("packet/data-index.tex", "w") as f:
     template = env.get_template("data-index.tex.jinja")
     f.write(template.render(problems=problems, total_problems=total_problems))
 
-with open("output/authors.tsv", "w") as f:
-    template = env.get_template("authors.tsv.jinja")
-    f.write(template.render(problems=problems))
-
 with open("output/form-script.js", "w") as f:
     template = env.get_template("form-script.js.jinja")
     f.write(template.render(problems=problems))

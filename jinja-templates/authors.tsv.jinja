@@ -1,5 +1,0 @@
-{%- for subject, items in problems.items() -%}
-{% for item in items %}
-{{- [item.pnum, item.author, item.desc, item.prob_source, item.prev_appear | default('')] | join('\t') }}
-{% endfor %}
-{%- endfor %}
