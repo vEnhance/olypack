@@ -2,6 +2,7 @@ all: packet
 
 packet: output/confidential-probs.pdf output/confidential-solns.pdf
 report: output/confidential-report.pdf
+test: test/final-probs.pdf test/final-solns.pdf
 receipt: output/receipt.html
 
 packet/data-index.tex packet/data-probs.tex packet/data-solns.tex: olypack/produce-packet.py data.yaml $(wildcard source/*.tex)
@@ -38,6 +39,18 @@ final-report/final-NO-SEND-report.pdf: final-report/final-NO-SEND-report.tex fin
 
 final-report/table.tex: ratings.tsv olypack/produce-scores.py
 	python3 olypack/produce-scores.py
+
+test/final-probs.pdf: test/final-probs.tex test-materials
+	latexmk -cd -pdf $<
+	touch $@
+
+test/final-solns.pdf: test/final-solns.tex test-materials
+	latexmk -cd -pdf $<
+	touch $@
+
+.PHONY: test-materials
+test-materials: olypack/produce-test.py data.yaml $(wildcard test/problems-*.tex) $(wildcard test/solutions-*.tex)
+	python3 $<
 
 output/receipt.mkd: data.yaml olypack/produce-receipts.py final-report/final-NO-SEND-report.tex packet/reviewers.txt
 	python3 olypack/produce-receipts.py

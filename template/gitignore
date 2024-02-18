@@ -2,6 +2,8 @@ output/
 packet/data-*.tex
 packet/uniqauthor.txt
 final-report/comments.tex
+test/problems-*.tex
+test/solutions-*.tex
 
 pythontex_data.pkl
 **.aux
