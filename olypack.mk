@@ -1,4 +1,4 @@
-all: packet
+all: packet report test receipt
 
 packet: output/confidential-probs.pdf output/confidential-solns.pdf
 report: output/confidential-report.pdf
