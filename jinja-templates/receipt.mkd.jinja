@@ -1,0 +1,66 @@
+# Not listed
+
+Thank you for submitting this problem!
+We ended up not shortlisting this problem to keep the
+size of the review packet manageable,
+however you should shortly hear back about other problems of yours
+which did make it into the review stage.
+
+This problem is hereby returned now, and you may send it wherever you like.
+
+
+-------------------------
+
+{% for problem in problems %}
+#  Problem {{ problem.pnum }} ({{ problem.desc }})
+
+The author of the problem ({{ problem.desc }}) is **{{ problem.author }}**.
+
+
+Thank you for submitting your problem!
+This is the return email for a problem which made it to the review stage,
+meaning it received ratings from my small panel of olympiad enthusiasts.
+Below you can find your problem status,
+a few comments summarizing the feedback from the reviewers,
+and numerical ratings among those reviewers who worked on the problem.
+Feel free to follow up with any questions.
+## Status
+
+{% if problem.chosen != -1 -%}
+Congratulations! This problem was selected as problem {{ problem.chosen }}.
+Here is the current statement:
+> {{ problem.prob }}
+
+If you notice anything you think should change, please let me know.
+And of course, keep this confidential until after the exam.
+{%- else -%}
+This problem is hereby returned to you now,
+meaning that you can now propose it to any other competition,
+including next year if you so choose.
+If possible, please avoid discussing this problem decision with others
+until after the exam, to avoid potentially leaking indirect information
+about other problems that may have been chosen.
+{%- endif %}
+## Comments
+
+{% if problem.comments_no_latex -%}
+{{- problem.comments_no_latex -}}
+{%- else -%}
+No comments.
+{%- endif %}
+
+## Ratings
+
+The following ratings in the informal beauty contest appeared:
+
+{% for i in range(QUALITY_RATINGS | length - 1, -1, -1) -%}
+- {{ problem.quality.count(i)}} ratings of {{ QUALITY_RATINGS[i] }}
+{% endfor %}
+The following difficulty ratings appeared:
+
+{% for i in range(DIFFICULTY_RATINGS | length) -%}
+- {{ problem.difficulty.count(i)}} ratings of {{ DIFFICULTY_RATINGS[i] }}
+{% endfor %}
+
+---------------------------------
+{% endfor %}

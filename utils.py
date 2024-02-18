@@ -22,6 +22,27 @@ def get_individual_authors(author_string: str) -> list[str]:
     return author_string.split(", ")
 
 
+def remove_latex(text: str) -> str:
+    DELETABLE_ENVIRONMENTS = [
+        r"\begin{itemize}",
+        r"\end{itemize}",
+        r"\begin{enumerate}",
+        r"\end{enumerate}",
+        r"\begin{quote}",
+        r"\end{quote}",
+    ]
+
+    result = ""
+    for line in text.split("\n"):
+        if line.strip() in DELETABLE_ENVIRONMENTS:
+            result += "\n"
+        elif line.strip().startswith(r"\ii"):
+            result += line.lstrip().replace(r"\ii", "- ") + "\n"
+        else:
+            result += line.strip() + "\n"
+    return result.strip()
+
+
 def problem_data_from_filename(filename: str) -> dict[str, Any]:
     with open(filename) as g:
         text = g.read()
@@ -42,19 +63,26 @@ def problem_data_from_filename(filename: str) -> dict[str, Any]:
 
     return {
         "prob_source": filename,
-        "prob": prob.strip(),
-        "sol": sol.strip(),
+        "prob": prob,
+        "sol": sol,
         "desc": desc,
         "prev_appear": prev_appear,
         "author": author,
         "split_authors": get_individual_authors(author),
-        "comments": comments.strip(),
+        "comments": comments,
+        "comments_no_latex": remove_latex(comments),
     }
 
 
 def all_problems() -> dict[str, list[dict[str, Any]]]:
     with open("data.yaml") as f:
         problem_files = yaml.load(f, Loader=yaml.FullLoader)["packet"]
+
+    with open("data.yaml") as f:
+        chosen_files = yaml.load(f, Loader=yaml.FullLoader)["chosen"]
+        chosen_files_list = [
+            item for sublist in chosen_files.values() for item in sublist
+        ]
 
     n = 0
     problems = {}
@@ -70,6 +98,9 @@ def all_problems() -> dict[str, list[dict[str, Any]]]:
                     **problem_data_from_filename(prob_source),
                     "pnum": pnum,
                     "pnum_no_dash": pnum_no_dash,
+                    "chosen": chosen_files_list.index(prob_source) + 1
+                    if prob_source in chosen_files_list
+                    else -1,
                 }
             )
     return problems
