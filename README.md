@@ -38,7 +38,6 @@ submodule was initialized. It allows the following commands:
 - `make packet`: produce the packet
 - `make report`: produce the final report
 - `make receipt`: produce comments that can be sent to authors on their problems
-- `make draft`: produce a draft of the solutions packet
 
 ## Format used for storing
 

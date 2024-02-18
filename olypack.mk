@@ -2,7 +2,6 @@ all: packet
 
 packet: output/confidential-probs.pdf output/confidential-solns.pdf
 report: output/confidential-report.pdf
-draft: output/draft-solns-day1.pdf
 receipt: output/receipt.html
 
 packet/data-index.tex packet/data-probs.tex packet/data-solns.tex: olypack/produce-packet.py data.yaml $(wildcard source/*.tex)
@@ -39,9 +38,6 @@ final-report/final-NO-SEND-report.pdf: final-report/final-NO-SEND-report.tex fin
 
 final-report/table.txt: ratings.tsv olypack/produce-scores.py
 	python3 olypack/produce-scores.py
-
-output/draft-solns-day1.pdf: $(wildcard source/*.tex) data.yaml password olypack/produce-draft.py
-	python3 olypack/produce-draft.py
 
 output/receipt.mkd: data.yaml olypack/produce-receipts.py final-report/final-NO-SEND-report.tex packet/reviewers.txt
 	python3 olypack/produce-receipts.py > $@
