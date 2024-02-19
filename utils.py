@@ -79,7 +79,7 @@ def all_problems() -> dict[str, list[dict[str, Any]]]:
         problem_files = yaml.load(f, Loader=yaml.FullLoader)["packet"]
 
     with open("data.yaml") as f:
-        chosen_files = yaml.load(f, Loader=yaml.FullLoader)["chosen"]
+        chosen_files = yaml.load(f, Loader=yaml.FullLoader)["test"]
         chosen_files_list = [
             item for sublist in chosen_files.values() for item in sublist
         ]
@@ -197,3 +197,19 @@ def all_problems_with_ratings() -> list[dict[str, Any]]:
         problems[i].update(rating_info(problems[i]["pnum"]))
 
     return problems
+
+
+def chosen_problems() -> dict[str, list[dict[str, Any]]]:
+    problems = all_problems_with_ratings()
+    with open("data.yaml") as f:
+        chosen_files = yaml.load(f, Loader=yaml.FullLoader)["test"]
+
+    chosen_problems = {}
+    for day, prob_list in chosen_files.items():
+        chosen_problems[day] = []
+        for chosen_filename in prob_list:
+            for problem in problems:
+                if problem["prob_source"] == chosen_filename:
+                    chosen_problems[day].append(problem)
+                    break
+    return chosen_problems
