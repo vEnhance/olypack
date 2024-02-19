@@ -35,6 +35,7 @@ pip install jinja2
 When initialized, a `Makefile` appears in the directory where the `olypack`
 submodule was initialized. It allows the following commands:
 
+- `make shuffle`: shuffle each section of the packet
 - `make packet`: produce the packet
 - `make report`: produce the final report
 - `make test`: produce the final test

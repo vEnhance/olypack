@@ -5,6 +5,9 @@ report: output/confidential-report.pdf
 test: test/final-probs.pdf test/final-solns.pdf
 receipt: output/receipt.html
 
+shuffle:
+	python3 olypack/shuffle-packet.py
+
 packet/data-index.tex packet/data-probs.tex packet/data-solns.tex: olypack/produce-packet.py data.yaml $(wildcard source/*.tex)
 	mkdir -p output/
 	python3 $<
