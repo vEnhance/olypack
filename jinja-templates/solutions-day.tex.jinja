@@ -4,6 +4,8 @@
 \section{Solutions to Day {{ day }}}
 {% for problem in problems %}
 \subsection{Solution to \shorttestname\ {{ problem.chosen }}, by {{ problem.author }}}
+{{ problem.prob }}
+\bigskip\hrulebar\bigskip
 {{ problem.sol }}
 {% if not loop.last %}
 \newpage
