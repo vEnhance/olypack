@@ -1,0 +1,16 @@
+{%- set ns = namespace(has_problems=false) -%}
+{%- for day, day_problems in problems.items() -%}
+    {%- if day_problems -%}
+        {%- set ns.has_problems = true -%}
+    {%- endif -%}
+{%- endfor -%}
+
+{% if ns.has_problems -%}
+\begin{description}
+{%- for day, day_problems in problems.items() -%}
+{% for problem in day_problems %}
+  \item[{{ problem.pnum }}] {{ problem.author }}
+{%- endfor %}
+{%- endfor %}
+\end{description}
+{% endif %}

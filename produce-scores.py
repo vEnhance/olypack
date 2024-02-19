@@ -1,4 +1,4 @@
-from utils import all_problems, all_problems_with_ratings, jinja_env
+from utils import all_problems, all_problems_with_ratings, chosen_problems, jinja_env
 
 __version__ = "2024-02"
 
@@ -23,5 +23,14 @@ with open("final-report/comments.tex", "w") as f:
     f.write(
         template.render(
             problems=all_problems(),
+        )
+    )
+
+with open("final-report/author-table.tex", "w") as f:
+    env = jinja_env()
+    template = env.get_template("author-table.tex.jinja")
+    f.write(
+        template.render(
+            problems=chosen_problems(),
         )
     )

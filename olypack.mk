@@ -33,11 +33,12 @@ output/confidential-report.pdf: final-report/final-NO-SEND-report.pdf password p
 	qpdf --encrypt $$(cat password) $$(cat password) 256 \
 	--print=none --modify=none -- $< $@
 
-final-report/final-NO-SEND-report.pdf: final-report/final-NO-SEND-report.tex final-report/table.tex
+final-report/final-NO-SEND-report.pdf: final-report/final-NO-SEND-report.tex final-report-materials
 	latexmk -cd -pdf $<
 	touch $@
 
-final-report/table.tex: ratings.tsv olypack/produce-scores.py
+.PHONY: final-report-materials
+final-report-materials: olypack/produce-scores.py final-report/table.tex final-report/author-table.tex
 	python3 olypack/produce-scores.py
 
 test/final-probs.pdf: test/final-probs.tex test-materials
