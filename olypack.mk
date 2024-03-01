@@ -41,7 +41,7 @@ final-report/final-NO-SEND-report.pdf: final-report/final-NO-SEND-report.tex fin
 	touch $@
 
 .PHONY: final-report-materials
-final-report-materials: olypack/produce-scores.py final-report/table.tex final-report/author-table.tex
+final-report-materials: olypack/produce-scores.py
 	python3 olypack/produce-scores.py
 
 test/final-probs.pdf: test/final-probs.tex test-materials
