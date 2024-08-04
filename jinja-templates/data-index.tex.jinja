@@ -1,3 +1,4 @@
+{% set total_problems = problems.values() | map('length') | sum %}
 {% if total_problems > 0 -%}
 \begin{description}[itemsep=2pt]
 {% endif -%}
