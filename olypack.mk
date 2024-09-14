@@ -2,7 +2,7 @@ all: packet report test receipt
 
 packet: output/confidential-probs.pdf output/confidential-solns.pdf
 report: output/confidential-report.pdf
-test: test/final-probs.pdf test/final-solns.pdf
+test: test/final-probs-encrypted.pdf test/final-solns-encrypted.pdf
 receipt: output/receipt.html
 
 shuffle:
@@ -51,6 +51,15 @@ test/final-probs.pdf: test/final-probs.tex test-materials
 test/final-solns.pdf: test/final-solns.tex test-materials
 	latexmk -cd -pdf $<
 	touch $@
+
+test/final-probs-encrypted.pdf: test/final-probs.pdf password password
+	qpdf --encrypt $$(cat password) $$(cat password) 256 \
+	--print=none --modify=none -- $< $@
+
+test/final-solns-encrypted.pdf: test/final-solns.pdf password password
+	qpdf --encrypt $$(cat password) $$(cat password) 256 \
+	--print=none --modify=none -- $< $@
+
 
 .PHONY: test-materials
 test-materials: olypack/produce-test.py data.yaml $(wildcard test/problems-*.tex) $(wildcard test/solutions-*.tex)
