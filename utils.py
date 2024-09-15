@@ -8,8 +8,8 @@ from jinja2 import Environment, FileSystemLoader
 QUALITY_SCALE = ["UNSUITABLE", "MEDIOCRE", "ACCEPTABLE", "NICE", "EXCELLENT"]
 QUALITY_WEIGHTS = [-0.75, -0.5, 0, 1, 1.5]
 
-DIFFICULTY_SCALE = ["IMO1", "IMO1,IMO2", "IMO2", "IMO2,IMO3", "IMO3"]
-DIFFICULTY_WEIGHTS = [1, 1.5, 2, 2.5, 3]
+DIFFICULTY_SCALE = ["< IMO 1", "IMO 1", "IMO 1.5", "IMO 2", "IMO 2.5", "IMO 3", "> IMO 3"]
+DIFFICULTY_WEIGHTS = [0.5, 1, 1.5, 2, 2.5, 3, 3.5]
 
 
 def jinja_env():

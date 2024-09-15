@@ -20,8 +20,8 @@
 {%- endmacro -%}
 
 {% macro difficulty_table(sort_key, with_slug, filtered) %}
-\begin{tabular}{l ccccc c}
-\toprule Prob & 1 & 1.5 & 2 & 2.5 & 3 & Avg \\ \midrule
+\begin{tabular}{l ccccccc c}
+\toprule Prob & < 1 & 1 & 1.5 & 2 & 2.5 & 3 & > 3 & Avg \\ \midrule
 {%- if filtered -%}
     {% set items = filtered_problems | sort(attribute=sort_key) %}
 {%- else -%}
@@ -29,7 +29,7 @@
 {%- endif %}
 {% for problem in items | sort(attribute=sort_key) %}
 {{- problem.difficulty_color }}
-{\scriptsize \textbf{{ "{" }}{{problem.pnum}}{{ "}" }}{% if with_slug %} {{ problem.desc }}{% endif %}} & {{ count_values(problem.difficulty, 0, 4) }}{{ '%.3f' | format(problem.difficulty_avg) }} \\
+{\scriptsize \textbf{{ "{" }}{{problem.pnum}}{{ "}" }}{% if with_slug %} {{ problem.desc }}{% endif %}} & {{ count_values(problem.difficulty, 0, 6) }}{{ '%.3f' | format(problem.difficulty_avg) }} \\
 {% endfor -%}
 \bottomrule
 \end{tabular}
