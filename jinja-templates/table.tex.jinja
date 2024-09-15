@@ -13,7 +13,7 @@
 {%- endif %}
 {% for problem in items | sort(attribute=sort_key) %}
 {{- problem.quality_color }}
-{%- if with_slug %}
+{%- if with_slug -%}
 \makebox[3cm][l]{\scriptsize \textbf{{ "{" }}{{problem.pnum}}{{ "}" }} {{ problem.desc }}}
 {%- else -%}
 {\scriptsize \textbf{{ "{" }}{{problem.pnum}}{{ "}" }}}
