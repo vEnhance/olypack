@@ -21,7 +21,7 @@
 
 {% macro difficulty_table(sort_key, with_slug, filtered) %}
 \begin{tabular}{l ccccccc c}
-\toprule Prob & < 1 & 1 & 1.5 & 2 & 2.5 & 3 & > 3 & Avg \\ \midrule
+\toprule Prob & $< 1$ & 1 & 1.5 & 2 & 2.5 & 3 & $> 3$ & Avg \\ \midrule
 {%- if filtered -%}
     {% set items = filtered_problems | sort(attribute=sort_key) %}
 {%- else -%}

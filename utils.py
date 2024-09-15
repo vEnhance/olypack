@@ -147,7 +147,6 @@ def all_problems_with_ratings() -> list[dict[str, Any]]:
                     p = key[key.index("[") + 1 :]
                     p = p[: p.index(" ")]
                     r = row[key]
-                    r = r.replace(" ", "").upper()
                     if r in DIFFICULTY_SCALE:
                         difficulty_indices[p].append(DIFFICULTY_SCALE.index(r))
 
