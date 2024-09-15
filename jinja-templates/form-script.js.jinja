@@ -1,28 +1,54 @@
 function changeProblems() {
     var form = FormApp.getActiveForm();
     var items = form.getItems();
-    var descriptorArray;
 
-    {% for subject, dir_items in problems.items() %}
-    descriptorArray = [
-        {% for item in dir_items -%}
-        "{{ item.pnum }} ({{ item.desc | replace('"', '\\"') }})",
+    const quality_columns = ["Unsuitable", "Mediocre", "Acceptable", "Nice", "Excellent"];
+    const difficulty_columns = ["< IMO 1", "IMO 1", "IMO 1.5", "IMO 2", "IMO 2.5", "IMO 3", "> IMO 3"];
+
+    const subjectsData = [
+        {%- for subject, dir_items in problems.items() %}
+        {
+            subject: "{{ subject }}",
+            descriptorArray: [
+                {%- for item in dir_items %}
+                "{{ item.pnum }} ({{ item.desc | replace('"', '\\"') }})",
+                {%- endfor %}
+            ]
+        },
         {% endfor %}
     ];
 
-    items.forEach(item => {
-        var formSubject = convertSubjectToShortForm("{{ subject }}");
+    subjectsData.forEach(data => {
+        var formSubject = convertSubjectToShortForm(data.subject);
+        var difficultyTitle = formSubject + " difficulty ratings";
+        var qualityTitle = formSubject + " quality ratings";
 
-        {% for form_typename, form_conversion_name in [
-            ("GRID", "Grid"),
-            ("CHECKBOX_GRID", "CheckboxGrid"),
-        ] %}
-        if (item.getType() == FormApp.ItemType.{{ form_typename }} && item.as{{ form_conversion_name }}Item().getTitle().includes(formSubject)) {
-            item.as{{ form_conversion_name }}Item().setRows(descriptorArray);
-        }
-        {%- endfor %}
+        replaceGridItem(form, difficultyTitle, data.descriptorArray, difficulty_columns);
+        replaceGridItem(form, qualityTitle, data.descriptorArray, quality_columns);
     });
-    {%- endfor %}
+}
+
+function replaceGridItem(form, title, rowsArray, columnsArray) {
+    var items = form.getItems();
+
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (item.getTitle() === title) {
+            Logger.log("Replacing " + title);
+            var idx = i;
+            form.deleteItem(item);
+
+            form.addGridItem()
+                .setTitle(title)
+                .setHelpText("Leave blank problems for which you have no comment.")
+                .setRows(rowsArray)
+                .setColumns(columnsArray);
+
+            form.moveItem(form.getItems().length - 1, idx);
+            return;
+        }
+    }
+    Logger.log("Failed to locate " + title)
 }
 
 function convertSubjectToShortForm(subject) {
