@@ -9,5 +9,4 @@ mv ../gitignore ../.gitignore
 
 mkdir -p ../notes ../output ../source
 
-# Copy the .pre-commit-config.yaml file to the root directory
 cp .pre-commit-config.yaml ..
