@@ -8,3 +8,5 @@ cp -r template/* ..
 mv ../gitignore ../.gitignore
 
 mkdir -p ../notes ../output ../source
+
+cp .pre-commit-config.yaml ..
