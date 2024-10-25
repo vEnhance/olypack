@@ -10,6 +10,8 @@ others, so this repository was made public.
 
 ## Installation
 
+For a new git repository being used for a particular cycle:
+
 ```bash
 git submodule add https://github.com/vEnhance/olypack
 cd olypack
