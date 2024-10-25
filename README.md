@@ -48,11 +48,14 @@ that used for the [VON](https://github.com/vEnhance/von) database.
 There are three parts:
 
 1. The metadata for the problem. This has three fields:
+
    - `desc`: (required) A one-line description of the problem.
    - `author`: (required) The authors of the problem,
      comma-separated list if more than one author.
    - `prev`: (optional) A list of places the problem was previously sent.
-     Additional keys are allowed, but not currently used.
+
+   Additional keys are allowed, but not currently used.
+
 2. Statement of the problem.
 3. Solution to the problem.
 
