@@ -37,5 +37,6 @@ fetch_file "evan.sty" "https://raw.githubusercontent.com/vEnhance/dotfiles/main/
 fetch_file "TST.sty" "https://raw.githubusercontent.com/vEnhance/dotfiles/main/texmf/tex/latex/TST/TST.sty"
 fetch_file "natoly.sty" "https://raw.githubusercontent.com/vEnhance/dotfiles/main/texmf/tex/latex/TST/natoly.sty"
 fetch_file "von.sty" "https://raw.githubusercontent.com/vEnhance/dotfiles/main/texmf/tex/latex/von/von.sty"
+fetch_file "olympiad.sty" "https://raw.githubusercontent.com/vEnhance/dotfiles/main/asy/olympiad.sty"
 
 mktexlsr "$texmfhome"
