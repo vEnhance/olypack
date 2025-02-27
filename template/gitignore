@@ -18,6 +18,7 @@ pythontex_data.pkl
 **.pytxcode
 **.pytxmcr
 **.pytxpyg
+**.synctex.gz
 **.toc
 
 **-[0-9].asy
