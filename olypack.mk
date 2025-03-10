@@ -69,4 +69,5 @@ output/receipt.mkd: data.yaml olypack/produce-receipts.py final-report/final-NO-
 	python3 olypack/produce-receipts.py
 
 output/receipt.html: output/receipt.mkd
+	python3 -c "import markdown" 2>/dev/null || (echo "Error: Python markdown module not installed. Please install with 'pip install markdown'." && exit 1)
 	python3 -m markdown $< > $@
