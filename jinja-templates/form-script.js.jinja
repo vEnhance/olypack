@@ -14,7 +14,7 @@ function changeProblems() {
             subject: "{{ subject }}",
             descriptorArray: [
                 {%- for item in dir_items %}
-                "{{ item.pnum }} ({{ item.desc | replace('"', '\\"') }})",
+                "{{ item.pnum }} ({{ item.desc | replace('\\', '\\\\') | replace('"', '\\"') }})",
                 {%- endfor %}
             ]
         },
