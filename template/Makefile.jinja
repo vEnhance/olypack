@@ -1,0 +1,21 @@
+# Makefile for [[test_name]]
+# This is a convenience wrapper around olypack commands
+
+all: packet report test receipt
+
+shuffle:
+	olypack shuffle
+
+packet:
+	olypack packet
+
+report:
+	olypack report
+
+test:
+	olypack test
+
+receipt:
+	olypack receipt
+
+.PHONY: all shuffle packet report test receipt

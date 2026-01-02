@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "olypack"
+version = "1.0.0"
+description = "Package for managing olympiad problem packets"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Evan Chen" },
+]
+dependencies = [
+    "click>=8.0",
+    "jinja2>=3.0",
+    "pyyaml>=6.0",
+    "pikepdf>=8.0",
+    "copier>=9.0",
+    "markdown>=3.0",
+]
+
+[project.scripts]
+olypack = "olypack.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/olypack"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

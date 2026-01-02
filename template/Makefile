@@ -1,1 +1,0 @@
-include olypack/olypack.mk

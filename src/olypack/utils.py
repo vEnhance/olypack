@@ -1,5 +1,6 @@
 import collections
 import csv
+from pathlib import Path
 from typing import Any, DefaultDict
 
 import yaml
@@ -13,7 +14,8 @@ DIFFICULTY_WEIGHTS = [0.5, 1, 1.5, 2, 2.5, 3, 3.5]
 
 
 def jinja_env():
-    return Environment(loader=FileSystemLoader("olypack/jinja-templates"))
+    templates_dir = Path(__file__).parent / "jinja-templates"
+    return Environment(loader=FileSystemLoader(str(templates_dir)))
 
 
 def get_individual_authors(author_string: str) -> list[str]:

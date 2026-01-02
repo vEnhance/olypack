@@ -1,47 +1,93 @@
 # olypack
 
-This is intended to be a git submodule used within git directories
-where USA team selection tests or other olympiad-style exams are being prepared.
-It automates the setup of some boilerplate for problem proposal packets
-and provides a `Makefile` that works with these systems.
+A Python package for managing olympiad problem packets used for USA team selection
+tests and other olympiad-style exams. It automates the setup of boilerplate for
+problem proposal packets and provides commands for generating PDFs.
 
 While it was written for in-house use, it could still possibly be useful to
 others, so this repository was made public.
 
 ## Installation
 
-For a new git repository being used for a particular cycle:
+Install olypack using uv or pip:
 
 ```bash
-git submodule add https://github.com/vEnhance/olypack
-cd olypack
-./init.sh
+# Using uv (recommended)
+uv pip install .
+
+# Or using pip
+pip install .
+
+# Or install in development mode
+pip install -e .
 ```
 
-Steps which only need to be done once per computer rather than once per TST cycle:
+### System Requirements
 
-- Obtain the required sty files:
+olypack requires LaTeX to be installed on your system, as it uses `latexmk` to
+compile PDFs. Install LaTeX before using olypack:
+
+- **Ubuntu/Debian**: `sudo apt install texlive-full`
+- **macOS**: Install [MacTeX](https://www.tug.org/mactex/)
+- **Windows**: Install [MiKTeX](https://miktex.org/) or [TeX Live](https://www.tug.org/texlive/)
+
+### Installing LaTeX Style Files
+
+After installing olypack, run the install command to download required `.sty` and
+`.asy` files:
 
 ```bash
-./install_sty.sh
+# Install required LaTeX and Asymptote files
+olypack install
+
+# Preview what would be installed without actually installing
+olypack install --dry-run
+
+# Force overwrite existing files
+olypack install --force
 ```
 
-- Install jinja2:
+This command will:
+- Check that `latexmk` is installed
+- Verify `TEXMFHOME` is set correctly
+- Download required style files (`evan.sty`, `TST.sty`, `natoly.sty`, `von.sty`)
+- Download required Asymptote files (`olympiad.asy`)
+- Update the TeX file database
+
+## Quick Start
+
+Initialize a new project:
 
 ```bash
-pip install jinja2
+# Create a new directory and initialize a project
+mkdir my-test-2025
+cd my-test-2025
+olypack init
+
+# Or initialize in the current directory
+olypack init .
 ```
+
+The `init` command will prompt you for information about your test (name, author,
+deadline, etc.) and set up the project structure with all necessary files.
 
 ## Commands
 
-When initialized, a `Makefile` appears in the directory where the `olypack`
-submodule was initialized. It allows the following commands:
+olypack provides the following commands:
 
-- `make shuffle`: shuffle each section of the packet
-- `make packet`: produce the packet
-- `make report`: produce the final report
-- `make test`: produce the final test
-- `make receipt`: produce comments that can be sent to authors on their problems
+- `olypack shuffle`: Randomly shuffle the packet order for each subject
+- `olypack packet`: Generate packet PDFs (problems and solutions)
+- `olypack report`: Generate the final report PDF
+- `olypack test`: Generate the test PDFs
+- `olypack receipt`: Generate receipt HTML for authors
+
+For convenience, a `Makefile` is also generated that wraps these commands:
+
+- `make shuffle`: same as `olypack shuffle`
+- `make packet`: same as `olypack packet`
+- `make report`: same as `olypack report`
+- `make test`: same as `olypack test`
+- `make receipt`: same as `olypack receipt`
 
 ## Format used for storing
 
