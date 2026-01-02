@@ -384,7 +384,7 @@ requires-dist = [
     { name = "prek", specifier = ">=0.1" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
     { name = "pyyaml", specifier = ">=6.0" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = "==0.14.10" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.14.10" },
 ]
 provides-extras = ["dev"]
 
