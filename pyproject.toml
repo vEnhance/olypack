@@ -18,6 +18,7 @@ dependencies = [
     "pikepdf>=8.0",
     "copier>=9.0",
     "markdown>=3.0",
+    "prek>=0.1",
 ]
 
 [project.scripts]

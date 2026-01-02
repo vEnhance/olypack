@@ -28,10 +28,22 @@ def main():
 @click.option("-f", "--force", is_flag=True, help="Overwrite existing files")
 def install(dry_run: bool, force: bool):
     """
-    Install required LaTeX and Asymptote files.
+    Install required LaTeX and Asymptote files, and set up pre-commit hooks.
 
     Checks for latexmk and TEXMFHOME, then downloads required .sty and .asy files.
+    Also installs prek hooks if in a git repository.
     """
+    # Check if we're in a git repository
+    try:
+        subprocess.run(
+            ["git", "rev-parse", "--git-dir"],
+            capture_output=True,
+            check=True,
+        )
+    except subprocess.CalledProcessError:
+        click.echo("Error: Not in a git repository. Please run this command from within a git repository.", err=True)
+        sys.exit(1)
+
     # Check for latexmk
     if not shutil.which("latexmk"):
         click.echo("Error: latexmk is not installed. Please install LaTeX.", err=True)
@@ -121,9 +133,22 @@ def install(dry_run: bool, force: bool):
         click.echo("Updating TeX file database...")
         try:
             subprocess.run(["mktexlsr", texmfhome], check=True)
-            click.echo("✓ Installation complete!")
         except subprocess.CalledProcessError as e:
             click.echo(f"Warning: Failed to run mktexlsr: {e}", err=True)
+
+        # Install prek hooks
+        click.echo("Installing pre-commit hooks with prek...")
+        try:
+            subprocess.run(["prek", "install"], check=True)
+            click.echo("✓ Pre-commit hooks installed!")
+        except subprocess.CalledProcessError as e:
+            click.echo(f"Warning: Failed to install prek hooks: {e}", err=True)
+        except FileNotFoundError:
+            click.echo("Warning: prek command not found. Hooks not installed.", err=True)
+
+        click.echo("✓ Installation complete!")
+    else:
+        click.echo("\nDry run complete. Would also install prek hooks.")
 
 
 @main.command()
