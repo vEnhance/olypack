@@ -81,14 +81,6 @@ olypack provides the following commands:
 - `olypack test`: Generate the test PDFs
 - `olypack receipt`: Generate receipt HTML for authors
 
-For convenience, a `Makefile` is also generated that wraps these commands:
-
-- `make shuffle`: same as `olypack shuffle`
-- `make packet`: same as `olypack packet`
-- `make report`: same as `olypack report`
-- `make test`: same as `olypack test`
-- `make receipt`: same as `olypack receipt`
-
 ## Format used for storing
 
 Each individual submission is stored as a single TeX file in a format similar to
