@@ -60,6 +60,16 @@ Options:
 - `--dry-run`: Preview what would be installed
 - `--force` or `-f`: Overwrite existing files
 
+### 4. Update an existing project (optional)
+
+To update your project from the latest template:
+
+```bash
+olypack update
+```
+
+This will pull in template updates while preserving your answers to the questionnaire.
+
 ### 4. Work with your packet
 
 Your project includes:

@@ -40,6 +40,30 @@ def setup(destination: str, template: str):
 
 
 @main.command()
+@click.argument("destination", default=".", required=False)
+def update(destination: str):
+    """
+    Update an existing project from its original template.
+
+    DESTINATION is the project directory to update (default: current directory).
+    """
+    try:
+        from copier import run_update
+    except ImportError:
+        click.echo("Error: copier is not installed.", err=True)
+        click.echo("Install it with: pip install copier", err=True)
+        sys.exit(1)
+
+    click.echo(f"Updating project in {destination}...")
+    try:
+        run_update(destination, unsafe=True, skip_answered=True)
+        click.echo("✓ Project updated!")
+    except Exception as e:
+        click.echo(f"Error: Failed to update project: {e}", err=True)
+        sys.exit(1)
+
+
+@main.command()
 @click.option("--dry-run", is_flag=True, help="Show what would be installed without installing")
 @click.option("-f", "--force", is_flag=True, help="Overwrite existing files")
 def install(dry_run: bool, force: bool):
