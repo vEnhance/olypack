@@ -87,7 +87,10 @@ def install(dry_run: bool, force: bool):
             check=True,
         )
     except subprocess.CalledProcessError:
-        click.echo("Error: Not in a git repository. Please run this command from within a git repository.", err=True)
+        click.echo(
+            "Error: Not in a git repository. Please run this command from within a git repository.",
+            err=True,
+        )
         sys.exit(1)
 
     # Check for latexmk
@@ -119,27 +122,22 @@ def install(dry_run: bool, force: bool):
         (
             "evan.sty",
             "https://raw.githubusercontent.com/vEnhance/dotfiles/main/texmf/tex/latex/evan/evan.sty",
-            f"{texmfhome}/tex/latex/evan.sty",
+            f"{texmfhome}/tex/latex/evan/evan.sty",
         ),
         (
             "TST.sty",
             "https://raw.githubusercontent.com/vEnhance/dotfiles/main/texmf/tex/latex/TST/TST.sty",
-            f"{texmfhome}/tex/latex/TST.sty",
+            f"{texmfhome}/tex/latex/TST/TST.sty",
         ),
         (
             "natoly.sty",
             "https://raw.githubusercontent.com/vEnhance/dotfiles/main/texmf/tex/latex/TST/natoly.sty",
-            f"{texmfhome}/tex/latex/natoly.sty",
-        ),
-        (
-            "von.sty",
-            "https://raw.githubusercontent.com/vEnhance/dotfiles/main/texmf/tex/latex/von/von.sty",
-            f"{texmfhome}/tex/latex/von.sty",
+            f"{texmfhome}/tex/latex/TST/natoly.sty",
         ),
         (
             "olympiad.asy",
             "https://raw.githubusercontent.com/vEnhance/dotfiles/main/asy/olympiad.asy",
-            f"{str(subprocess.run(['sh', '-c', 'echo $HOME'], capture_output=True, text=True).stdout.strip())}/.asy/olympiad.asy",
+            "~/.asy/olympiad.asy",
         ),
     ]
 
@@ -147,7 +145,7 @@ def install(dry_run: bool, force: bool):
     import urllib.request
 
     for filename, url, target_path in files_to_fetch:
-        target = Path(target_path)
+        target = Path(target_path).expanduser()
 
         # Check if file exists
         if target.exists() and not force:
@@ -167,28 +165,6 @@ def install(dry_run: bool, force: bool):
             click.echo(f"✓ Downloaded {filename} to {target}")
         except Exception as e:
             click.echo(f"✗ Failed to download {filename}: {e}", err=True)
-
-    if not dry_run:
-        # Run mktexlsr to update the TeX file database
-        click.echo("Updating TeX file database...")
-        try:
-            subprocess.run(["mktexlsr", texmfhome], check=True)
-        except subprocess.CalledProcessError as e:
-            click.echo(f"Warning: Failed to run mktexlsr: {e}", err=True)
-
-        # Install prek hooks
-        click.echo("Installing pre-commit hooks with prek...")
-        try:
-            subprocess.run(["prek", "install"], check=True)
-            click.echo("✓ Pre-commit hooks installed!")
-        except subprocess.CalledProcessError as e:
-            click.echo(f"Warning: Failed to install prek hooks: {e}", err=True)
-        except FileNotFoundError:
-            click.echo("Warning: prek command not found. Hooks not installed.", err=True)
-
-        click.echo("✓ Installation complete!")
-    else:
-        click.echo("\nDry run complete. Would also install prek hooks.")
 
 
 if __name__ == "__main__":
