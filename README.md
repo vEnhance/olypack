@@ -70,7 +70,7 @@ olypack update
 
 This will pull in template updates while preserving your answers to the questionnaire.
 
-### 4. Work with your packet
+## Working with your packet
 
 Your project includes:
 - `Makefile` for building PDFs
