@@ -26,13 +26,9 @@ def setup(destination: str, template: str):
     try:
         from copier import run_copy
     except ImportError:
-        click.echo("Error: copier is not installed. Installing...", err=True)
-        try:
-            subprocess.run([sys.executable, "-m", "pip", "install", "copier"], check=True)
-            from copier import run_copy
-        except Exception as e:
-            click.echo(f"Error: Failed to install copier: {e}", err=True)
-            sys.exit(1)
+        click.echo("Error: copier is not installed.", err=True)
+        click.echo("Install it with: pip install copier", err=True)
+        sys.exit(1)
 
     click.echo(f"Initializing project from {template} in {destination}...")
     try:
