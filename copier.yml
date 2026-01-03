@@ -1,7 +1,7 @@
 # Copier template configuration for olypack
 
+_subdirectory: template
 _templates_suffix: .copier.jinja
-_exclude: "olypack/*"
 _envops:
   variable_start_string: "[["
   variable_end_string: "]]"
