@@ -1,6 +1,7 @@
 # Copier template configuration for olypack
 
 _templates_suffix: .copier.jinja
+_exclude: "olypack/*"
 _envops:
   variable_start_string: "[["
   variable_end_string: "]]"
@@ -10,13 +11,16 @@ _envops:
 # Questions for the user
 test_name:
   type: str
-  help: What is the name of the test? (e.g., "TST Selection Test for IMO 2011")
+  help: What is the name of the test?
+  placeholder: Antarctica TST 2026
 test_short_name:
   type: str
-  help: What is the short name for the test? (e.g., "TSTST 2011")
+  help: What is the short name for the test?
+  placeholder: ATST 2026
 test_subtitle_name:
   type: str
-  help: What is the location or organization? (e.g. "Pittsburgh, PA" or "Advantage Testing Foundation / Jane Street")
+  help: What is the location or organization?
+  placeholder: Antarctica
 
 solution_packet_authors:
   type: str
@@ -25,18 +29,18 @@ solution_packet_authors:
 
 solution_packet_date:
   type: str
-  help: What date should be written on the solutions packet? (e.g. "December 2025")
-  default: "TBD"
+  help: What date should be written on the solutions packet?
+  placeholder: "February 30, 2026"
 
 submission_deadline:
   type: str
-  help: What is the submission deadline? (e.g., "December 31, 2025")
-  default: "TBD"
+  help: What is the submission deadline?
+  placeholder: "February 30, 2026"
 
 submit_url:
   type: str
   help: What is the submission URL? (Link to Google Form, probably.)
-  default: "https://example.com/submit"
+  placeholder: "https://example.com/submit"
 
 day1:
   type: str
@@ -44,19 +48,23 @@ day1:
   default: ""
 day2:
   type: str
-  help: When is the first day of the exam? Leave blank for none.
+  help: When is the second day of the exam? Leave blank for none.
   default: ""
+  when: "{{ day1 }}"
 day3:
   type: str
-  help: When is the first day of the exam? Leave blank for none.
+  help: When is the third day of the exam? Leave blank for none.
   default: ""
+  when: "{{ day2 }}"
 
 num_problems_received:
   type: str
   help: How many problems were received initially?
-  default: "TBD"
+  placeholder: "TBD"
 
 password:
   type: str
   help: Password for encrypting PDFs
-  default: "CHANGE_THIS_PASSWORD"
+  secret: true
+  default: ""
+  placeholder: "ENTER_PASSWORD_HERE"
