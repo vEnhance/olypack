@@ -1,71 +1,60 @@
 # Copier template configuration for olypack
 
-_templates_suffix: .jinja
+_templates_suffix: .copier.jinja
 _envops:
   variable_start_string: "[["
   variable_end_string: "]]"
-
-# Exclude files that are part of the olypack package/repo itself, not the template
-_exclude:
-  - src/
-  - pyproject.toml
-  - uv.lock
-  - copier.yml
-  - .git/
-  - .gitignore
-  - README.md
-  - .pre-commit-config.yaml
-  - __pycache__/
-  - "*.pyc"
-  - "*.egg-info/"
+  block_end_string: "%]"
+  block_start_string: "[%"
 
 # Questions for the user
 test_name:
   type: str
-  help: What is the name of the test? (e.g., "TSTST 2025")
-
+  help: What is the name of the test? (e.g., "TST Selection Test for IMO 2011")
 test_short_name:
   type: str
-  help: What is the short name for the test? (e.g., "TSTST")
-
-author_name:
+  help: What is the short name for the test? (e.g., "TSTST 2011")
+test_subtitle_name:
   type: str
-  help: Who is the primary author/coordinator?
+  help: What is the location or organization? (e.g. "Pittsburgh, PA" or "Advantage Testing Foundation / Jane Street")
+
+solution_packet_authors:
+  type: str
+  help: Who should be credited as the organizer for the solutions packet?
   default: "Evan Chen"
+
+solution_packet_date:
+  type: str
+  help: What date should be written on the solutions packet? (e.g. "December 2025")
+  default: "TBD"
 
 submission_deadline:
   type: str
   help: What is the submission deadline? (e.g., "December 31, 2025")
+  default: "TBD"
 
 submit_url:
   type: str
-  help: What is the submission URL?
+  help: What is the submission URL? (Link to Google Form, probably.)
   default: "https://example.com/submit"
+
+day1:
+  type: str
+  help: When is the first day of the exam? Leave blank for none.
+  default: ""
+day2:
+  type: str
+  help: When is the first day of the exam? Leave blank for none.
+  default: ""
+day3:
+  type: str
+  help: When is the first day of the exam? Leave blank for none.
+  default: ""
 
 num_problems_received:
   type: str
   help: How many problems were received initially?
   default: "TBD"
-
-reviewer_name:
-  type: str
-  help: Who is the main reviewer?
-  default: "TBD"
-
-test_date:
-  type: str
-  help: When will the test be administered? (e.g., "January 2026")
-  default: "TBD"
-
-selection_context:
-  type: str
-  help: What is this test selecting for? (e.g., "IMO 2026")
-  default: "TBD"
-
-additional_reviewers:
-  type: str
-  help: List any additional reviewers who provided comments
-  default: "the problem selection committee"
 
 password:
   type: str

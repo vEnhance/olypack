@@ -7,19 +7,22 @@
 \begin{document}
 
 \title{[[test_name]] Solutions}
-\subtitle{[[test_short_name]]}
-\author{[[author_name]]}
-\date{[[test_date]]}
+\author{[[solution_packet_authors]]}
+\date{[[solution_packet_date]]}
 \maketitle
 
 \tableofcontents
 
 \cleardoublepage
 
+[% if day1 %]
 \input{solutions-1}
-
-\newpage
-
+[% endif %]
+[% if day2 %]
 \input{solutions-2}
+[% endif %]
+[% if day3 %]
+\input{solutions-3}
+[% endif %]
 
 \end{document}

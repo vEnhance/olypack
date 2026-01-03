@@ -1,5 +1,3 @@
-# Makefile for [[test_name]]
-
 all: packet report test receipt
 
 shuffle:

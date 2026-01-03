@@ -1,0 +1,31 @@
+\documentclass[11pt]{scrartcl}
+\usepackage{natoly}
+\newtheorem{problem}{Problem}
+
+\title{[[test_name]]}
+\author{[[author_name]]}
+
+\begin{document}
+
+[% if day1 %]
+\dayinfo{Day I}
+\date{[[day1]]}
+\maketitle
+\input{problems-1}
+[% endif %]
+
+[% if day2 %]
+\dayinfo{Day II}
+\date{[[day2]]}
+\maketitle
+\input{problems-2}
+[% endif %]
+
+[% if day3 %]
+\dayinfo{Day II}
+\date{[[day3]]}
+\maketitle
+\input{problems-3}
+[% endif %]
+
+\end{document}
