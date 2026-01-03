@@ -18,7 +18,6 @@ _exclude:
   - __pycache__/
   - "*.pyc"
   - "*.egg-info/"
-  - template/
 
 # Questions for the user
 test_name:
