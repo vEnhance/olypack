@@ -1,50 +1,42 @@
 # olypack
 
-A Python package for managing olympiad problem packets used for USA team selection
-tests and other olympiad-style exams. It automates the setup of boilerplate for
-problem proposal packets and provides commands for generating PDFs.
+A copier template for managing olympiad problem packets used for USA team selection
+tests and other olympiad-style exams. It provides a complete workflow for problem
+collection, review, and test generation.
 
-While it was written for in-house use, it could still possibly be useful to
-others, so this repository was made public.
+## Quick Start
 
-## Installation
+### 1. Install olypack (one-time setup)
 
-Install olypack using uv or pip:
+First, install the olypack package which provides the `olypack` command for setup:
 
 ```bash
 # Using uv (recommended)
-uv pip install .
+uv tool install git+https://github.com/vEnhance/olypack
 
-# Or using pip
-pip install .
-
-# Or install in development mode
-pip install -e .
+# Or using pipx
+pipx install git+https://github.com/vEnhance/olypack
 ```
 
-### System Requirements
+### 2. Create a new project
 
-olypack requires LaTeX to be installed on your system, as it uses `latexmk` to
-compile PDFs. Install LaTeX before using olypack:
-
-- **Ubuntu/Debian**: `sudo apt install texlive-full`
-- **macOS**: Install [MacTeX](https://www.tug.org/mactex/)
-- **Windows**: Install [MiKTeX](https://miktex.org/) or [TeX Live](https://www.tug.org/texlive/)
-
-### Installing LaTeX Style Files
-
-After installing olypack, run the install command to download required `.sty` and
-`.asy` files:
+Use copier to create a new project from the template:
 
 ```bash
-# Install required LaTeX and Asymptote files
+# Create a new directory for your test
+copier copy gh:vEnhance/olypack my-test-2026
+cd my-test-2026
+```
+
+Copier will ask you questions about your test (name, author, deadlines, etc.) and
+generate a customized project.
+
+### 3. Install LaTeX dependencies
+
+From within your project directory, run:
+
+```bash
 olypack install
-
-# Preview what would be installed without actually installing
-olypack install --dry-run
-
-# Force overwrite existing files
-olypack install --force
 ```
 
 This command will:
@@ -52,92 +44,54 @@ This command will:
 - Verify `TEXMFHOME` is set correctly
 - Download required style files (`evan.sty`, `TST.sty`, `natoly.sty`, `von.sty`)
 - Download required Asymptote files (`olympiad.asy`)
+- Install pre-commit hooks with prek
 - Update the TeX file database
 
-## Quick Start
+Options:
+- `--dry-run`: Preview what would be installed
+- `--force` or `-f`: Overwrite existing files
 
-Initialize a new project:
+### 4. Work with your packet
 
-```bash
-# Create a new directory and initialize a project
-mkdir my-test-2025
-cd my-test-2025
-olypack init
-
-# Or initialize in the current directory
-olypack init .
-```
-
-The `init` command will prompt you for information about your test (name, author,
-deadline, etc.) and set up the project structure with all necessary files.
+Your project includes:
+- `Makefile` for building PDFs
+- `olypack/` directory with Python utilities
+- `packet/`, `test/`, `final-report/` directories for LaTeX files
+- `data.yaml` for configuring which problems to include
 
 ## Commands
 
-olypack provides the following commands:
+The generated project includes a `Makefile` with these targets:
 
-- `olypack shuffle`: Randomly shuffle the packet order for each subject
-- `olypack packet`: Generate packet PDFs (problems and solutions)
-- `olypack report`: Generate the final report PDF
-- `olypack test`: Generate the test PDFs
-- `olypack receipt`: Generate receipt HTML for authors
+- `make shuffle`: Randomly shuffle the packet order for each subject
+- `make packet`: Generate packet PDFs (problems and solutions)
+- `make report`: Generate the final report PDF
+- `make test`: Generate the test PDFs
+- `make receipt`: Generate receipt HTML for authors
 
-## Format used for storing
+You can also use the Python commands directly:
 
-Each individual submission is stored as a single TeX file in a format similar to
-that used for the [VON](https://github.com/vEnhance/von) database.
-There are three parts:
-
-1. The metadata for the problem. This has three fields:
-
-   - `desc`: (required) A one-line description of the problem.
-   - `author`: (required) The authors of the problem,
-     comma-separated list if more than one author.
-   - `prev`: (optional) A list of places the problem was previously sent.
-
-   Additional keys are allowed, but not currently used.
-
-2. Statement of the problem.
-3. Solution to the problem.
-
-These parts are separated by the magic string `---`:
-three hyphens, surrounded by blank newlines.
-
-Thus, an example submission could look like:
-
-```latex
-desc: Poodles are not cats (insert a one-line description of the problem here)
-author: Ellie Example, Sammy Sample (replace this with names of all authors)
-prev: TSTST 2010 packet G-24 (list of previous packet appearances)
-
----
-
-Let $\mathbf{P}$ denote the set of poodles and $\mathbf{NP}$ denote the set of
-non-deterministic poodles (that is, animals that could plausibly be poodles).
-Does $\mathbf{P} = \mathbf{NP}$?
-
----
-
-We show that a poodle is not a cat.
-Since cats are in $\mathbf{NP}$, it will follow $\mathbf{P} \neq \mathbf{NP}$.
-
-% In the packet, a claim* environment is provided for claims.
-% (There is an analogous lemma* environment and remark* environment.)
-
-\begin{lemma*}
-  A poodle is a dog.
-\end{lemma*}
-\begin{proof}
-  Well-known.
-\end{proof}
-
-\begin{claim*}
-  A dog is not a cat.
-\end{claim*}
-\begin{proof}
-  We use barycentric coordinates.
-\end{proof}
-
-\begin{remark*}
-  You can add any remarks to the problem using the \texttt{remark*} environment.
-\end{remark*}
+```bash
+python3 olypack.py shuffle    # Shuffle problems
+python3 olypack.py packet     # Generate packet data
+python3 olypack.py test       # Generate test materials
+python3 olypack.py scores     # Generate final report scores
+python3 olypack.py receipts   # Generate receipts
+python3 olypack.py encrypt INPUT.pdf OUTPUT.pdf password  # Encrypt a PDF
 ```
+
+## System Requirements
+
+olypack requires LaTeX to be installed on your system:
+
+- **Ubuntu/Debian**: `sudo apt install texlive-full`
+- **macOS**: Install [MacTeX](https://www.tug.org/mactex/)
+- **Windows**: Install [MiKTeX](https://miktex.org/) or [TeX Live](https://www.tug.org/texlive/)
+
+Python dependencies are managed with the generated project.
+
+## Customization
+
+The generated project includes all Python scripts in the `olypack/` directory, which
+you can freely edit and customize for your specific needs. This is intentional - the
+scripts are meant to be modified per-project as needed.

@@ -5,6 +5,21 @@ _envops:
   variable_start_string: "[["
   variable_end_string: "]]"
 
+# Exclude files that are part of the olypack package/repo itself, not the template
+_exclude:
+  - src/
+  - pyproject.toml
+  - uv.lock
+  - copier.yml
+  - .git/
+  - .gitignore
+  - README.md
+  - .pre-commit-config.yaml
+  - __pycache__/
+  - "*.pyc"
+  - "*.egg-info/"
+  - template/
+
 # Questions for the user
 test_name:
   type: str

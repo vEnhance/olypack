@@ -1,6 +1,5 @@
 import collections
 import csv
-from pathlib import Path
 from typing import Any, DefaultDict
 
 import yaml
@@ -14,8 +13,7 @@ DIFFICULTY_WEIGHTS = [0.5, 1, 1.5, 2, 2.5, 3, 3.5]
 
 
 def jinja_env():
-    templates_dir = Path(__file__).parent / "jinja-templates"
-    return Environment(loader=FileSystemLoader(str(templates_dir)))
+    return Environment(loader=FileSystemLoader("olypack/jinja-templates"))
 
 
 def get_individual_authors(author_string: str) -> list[str]:
@@ -214,3 +212,24 @@ def chosen_problems() -> dict[str, list[dict[str, Any]]]:
                     chosen_problems[day].append(problem)
                     break
     return chosen_problems
+
+
+
+def encrypt_pdf(input_path: str, output_path: str, password: str) -> None:
+    """Encrypt a PDF with a password using pikepdf."""
+    import pikepdf
+    from pathlib import Path
+
+    input_path = Path(input_path)
+    output_path = Path(output_path)
+
+    with pikepdf.open(input_path) as pdf:
+        # Encrypt with AES-256, no printing or modification allowed
+        pdf.save(
+            output_path,
+            encryption=pikepdf.Encryption(
+                user=password,
+                owner=password,
+                allow=pikepdf.Permissions(print_lowres=False, modify_assembly=False),
+            ),
+        )

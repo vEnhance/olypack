@@ -1,0 +1,70 @@
+# Makefile for [[test_name]]
+
+all: packet report test receipt
+
+shuffle:
+	python3 olypack.py shuffle
+
+packet/data-index.tex packet/data-probs.tex packet/data-solns.tex: olypack/produce-packet.py data.yaml $(wildcard source/*.tex)
+	mkdir -p output/
+	python3 olypack.py packet
+
+packet/internal-NO-SEND-probs.pdf: packet/internal-NO-SEND-probs.tex \
+	packet/data-probs.tex packet/data-index.tex \
+	packet/meta.sty packet/instructions.tex packet/reviewers.txt
+	latexmk -cd -pdf $<
+	touch $@
+
+packet/internal-NO-SEND-solns.pdf: packet/internal-NO-SEND-solns.tex \
+	packet/data-probs.tex packet/data-solns.tex \
+	packet/meta.sty packet/instructions.tex packet/reviewers.txt
+	latexmk -cd -pdf $<
+	touch $@
+
+output/confidential-probs.pdf: packet/internal-NO-SEND-probs.pdf password
+	python3 olypack.py encrypt $< $@ password
+
+output/confidential-solns.pdf: packet/internal-NO-SEND-solns.pdf password
+	python3 olypack.py encrypt $< $@ password
+
+output/confidential-report.pdf: final-report/final-NO-SEND-report.pdf password
+	python3 olypack.py encrypt $< $@ password
+
+final-report/final-NO-SEND-report.pdf: final-report/final-NO-SEND-report.tex final-report-materials
+	latexmk -cd -pdf $<
+	touch $@
+
+.PHONY: final-report-materials
+final-report-materials: olypack/produce-scores.py
+	python3 olypack.py scores
+
+test/final-probs.pdf: test/final-probs.tex test-materials
+	latexmk -cd -pdf $<
+	touch $@
+
+test/final-solns.pdf: test/final-solns.tex test-materials
+	latexmk -cd -pdf $<
+	touch $@
+
+test/final-probs-encrypted.pdf: test/final-probs.pdf password
+	python3 olypack.py encrypt $< $@ password
+
+test/final-solns-encrypted.pdf: test/final-solns.pdf password
+	python3 olypack.py encrypt $< $@ password
+
+.PHONY: test-materials
+test-materials: olypack/produce-test.py data.yaml $(wildcard test/problems-*.tex) $(wildcard test/solutions-*.tex)
+	python3 olypack.py test
+
+output/receipt.mkd: data.yaml olypack/produce-receipts.py final-report/final-NO-SEND-report.tex packet/reviewers.txt
+	python3 olypack.py receipts
+
+output/receipt.html: output/receipt.mkd
+	python3 -m markdown $< > $@
+
+packet: output/confidential-probs.pdf output/confidential-solns.pdf
+report: output/confidential-report.pdf
+test: test/final-probs-encrypted.pdf test/final-solns-encrypted.pdf
+receipt: output/receipt.html
+
+.PHONY: all shuffle packet report test receipt
