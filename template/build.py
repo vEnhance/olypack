@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""olypack command-line tool for the template."""
+"""Build script for olypack project."""
 
 import sys
 
@@ -10,7 +10,7 @@ from olypack.utils import encrypt_pdf
 
 @click.group()
 def main():
-    """olypack utilities for managing olympiad problem packets."""
+    """Build utilities for managing olympiad problem packets."""
     pass
 
 

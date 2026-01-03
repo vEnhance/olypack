@@ -1,4 +1,4 @@
-"""Command-line interface for olypack - install command only."""
+"""Command-line interface for olypack."""
 
 import shutil
 import subprocess
@@ -7,11 +7,46 @@ import sys
 import click
 
 
-@click.command()
+@click.group()
+@click.version_option(version="1.0.0", prog_name="olypack")
+def main():
+    """olypack - Copier template for managing olympiad problem packets."""
+    pass
+
+
+@main.command()
+@click.argument("destination", default=".", required=False)
+@click.option("--template", "--source", default="gh:vEnhance/olypack", help="Template source URL")
+def setup(destination: str, template: str):
+    """
+    Set up a new olympiad packet project using copier.
+
+    DESTINATION is the directory where the project will be created (default: current directory).
+    """
+    try:
+        from copier import run_copy
+    except ImportError:
+        click.echo("Error: copier is not installed. Installing...", err=True)
+        try:
+            subprocess.run([sys.executable, "-m", "pip", "install", "copier"], check=True)
+            from copier import run_copy
+        except Exception as e:
+            click.echo(f"Error: Failed to install copier: {e}", err=True)
+            sys.exit(1)
+
+    click.echo(f"Initializing project from {template} in {destination}...")
+    try:
+        run_copy(template, destination, unsafe=True)
+        click.echo("✓ Project initialized!")
+    except Exception as e:
+        click.echo(f"Error: Failed to initialize project: {e}", err=True)
+        sys.exit(1)
+
+
+@main.command()
 @click.option("--dry-run", is_flag=True, help="Show what would be installed without installing")
 @click.option("-f", "--force", is_flag=True, help="Overwrite existing files")
-@click.version_option(version="1.0.0", prog_name="olypack")
-def main(dry_run: bool, force: bool):
+def install(dry_run: bool, force: bool):
     """
     Install required LaTeX and Asymptote files, and set up pre-commit hooks.
 

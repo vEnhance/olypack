@@ -8,7 +8,7 @@ collection, review, and test generation.
 
 ### 1. Install olypack (one-time setup)
 
-First, install the olypack package which provides the `olypack` command for setup:
+Install the olypack tool:
 
 ```bash
 # Using uv (recommended)
@@ -20,16 +20,25 @@ pipx install git+https://github.com/vEnhance/olypack
 
 ### 2. Create a new project
 
-Use copier to create a new project from the template:
+Use olypack to set up a new project:
 
 ```bash
 # Create a new directory for your test
-copier copy gh:vEnhance/olypack my-test-2026
+olypack setup my-test-2026
 cd my-test-2026
+
+# Or set up in the current directory
+olypack setup
 ```
 
-Copier will ask you questions about your test (name, author, deadlines, etc.) and
-generate a customized project.
+You can also specify a custom template source:
+
+```bash
+olypack setup my-test-2026 --template gh:yourname/your-fork
+```
+
+The setup command will ask you questions about your test (name, author, deadlines, etc.)
+and generate a customized project.
 
 ### 3. Install LaTeX dependencies
 
@@ -72,12 +81,12 @@ The generated project includes a `Makefile` with these targets:
 You can also use the Python commands directly:
 
 ```bash
-python3 olypack.py shuffle    # Shuffle problems
-python3 olypack.py packet     # Generate packet data
-python3 olypack.py test       # Generate test materials
-python3 olypack.py scores     # Generate final report scores
-python3 olypack.py receipts   # Generate receipts
-python3 olypack.py encrypt INPUT.pdf OUTPUT.pdf password  # Encrypt a PDF
+python3 build.py shuffle    # Shuffle problems
+python3 build.py packet     # Generate packet data
+python3 build.py test       # Generate test materials
+python3 build.py scores     # Generate final report scores
+python3 build.py receipts   # Generate receipts
+python3 build.py encrypt INPUT.pdf OUTPUT.pdf password  # Encrypt a PDF
 ```
 
 ## System Requirements
