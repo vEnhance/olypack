@@ -32,8 +32,14 @@ def setup(destination: str, template: str):
 
     click.echo(f"Initializing project from {template} in {destination}...")
     try:
-        run_copy(template, destination, unsafe=True)
+        run_copy(
+            template,
+            destination,
+            unsafe=True,
+            answers_file=".copier-answers.yml"
+        )
         click.echo("✓ Project initialized!")
+        click.echo(f"✓ Questionnaire answers saved to {destination}/.copier-answers.yml")
     except Exception as e:
         click.echo(f"Error: Failed to initialize project: {e}", err=True)
         sys.exit(1)
