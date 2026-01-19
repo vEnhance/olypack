@@ -24,7 +24,9 @@ for subject in data["packet"]:
         data["packet"][subject][idx] = f"{dir}/{new_filename}"
         problem_id += 1
         if old_filename != new_filename:
-            subprocess.run(["git", "mv", f"{dir}/{old_filename}", f"{dir}/{new_filename}"])
+            subprocess.run(
+                ["git", "mv", f"{dir}/{old_filename}", f"{dir}/{new_filename}"]
+            )
 
 
 with open("data.yaml", "w") as file:
