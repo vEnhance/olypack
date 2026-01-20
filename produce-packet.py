@@ -1,12 +1,11 @@
 #!/usr/bin/python3
 
-__version__ = "2024-08"
 
 import os
-import yaml
 
 from utils import all_problems, jinja_env, problem_data_from_filename
 
+__version__ = "2024-08"
 
 problems = all_problems()
 unique_authors = set()
