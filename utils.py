@@ -84,18 +84,20 @@ def problem_data_from_filename(filename: str) -> dict[str, Any]:
 
 def all_problems() -> dict[str, list[dict[str, Any]]]:
     with open("data.yaml") as f:
-        problem_files = yaml.load(f, Loader=yaml.FullLoader)["packet"]
+        yaml_data = yaml.load(f, Loader=yaml.SafeLoader)
+    problem_files = yaml_data["packet"]
+    chosen_files = yaml_data["test"]
+    section_padding = yaml_data.get("section_padding", 0)
+    chosen_files_list = [item for sublist in chosen_files.values() for item in sublist]
 
-    with open("data.yaml") as f:
-        chosen_files = yaml.load(f, Loader=yaml.FullLoader)["test"]
-        chosen_files_list = [
-            item for sublist in chosen_files.values() for item in sublist
-        ]
-
-    n = 0
+    n = 0  # problem number running counter
+    s = 0  # section number running counter
     problems = {}
     for subject, dir_items in problem_files.items():
         problems[subject] = []
+        if n < section_padding * s:
+            n = section_padding * s
+        s += 1
         for prob_source in dir_items:
             n += 1
             letter = subject[0]
