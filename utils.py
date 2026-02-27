@@ -7,6 +7,7 @@ from jinja2 import Environment, FileSystemLoader
 
 QUALITY_SCALE = ["UNSUITABLE", "MEDIOCRE", "ACCEPTABLE", "NICE", "EXCELLENT"]
 QUALITY_WEIGHTS = [-0.75, -0.5, 0, 1, 1.5]
+QUALITY_CUTOFF = QUALITY_WEIGHTS[2]
 
 DIFFICULTY_SCALE = [
     "< IMO 1",
